@@ -18,8 +18,9 @@
 		return "<?php echo PLAY_URL;?>"+encodeURIComponent(u)+ext;
 	};
 
-	var getMergeUrl = function (u, stbid) {
-		return 'http://223.244.227.56:8080/ott/play/ott?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
+	var getMergeUrl = function (u) {
+		//return 'http://223.244.227.56:8080/ott/play/ott?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
+		return u+'&mode=getMergeUrl&seek=OTT';
 	};
 
 	var returnPageData = function (force) {
@@ -75,24 +76,14 @@
 			
 			data.m_url = src+'&quality=0';
 
-			if (window.stbid) {
-				var mu = [getMergeUrl(src+'&quality=0', window.stbid), getMergeUrl(src+'&quality=1', window.stbid)];
-
-				data.ottsd_url= mu[0];
-				data.otthd_url= mu[1];
-
-			} else {
-				window.location.href = 'api://getStbid:'+url;
-			}
+			var mu = [getMergeUrl(src+'&quality=0'), getMergeUrl(src+'&quality=1')];
+			data.ottsd_url= mu[0];
+			data.otthd_url= mu[1];
 
 			returnPageData();
 		};
 
-		if (!window.stbid) {
-			setTimeout(appendBtn, 1000);
-		} else {
-			appendBtn();
-		}
+		appendBtn();
 	} else {
 		data = null;
 		returnPageData(true);
