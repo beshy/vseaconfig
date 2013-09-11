@@ -4,6 +4,6 @@
 </a>
 <div class="option_frame frame"><a href="javascript:void(0);" onclick="$(this).parent().siblings('.options').toggle();" class="optionlink"></a></div>
 <div class="options" style="display:none;" >
-<a href="{durl}">download</a> | <a href="#">share</a>
+{options}
 </div>
 </li>
