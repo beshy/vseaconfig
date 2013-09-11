@@ -1,4 +1,3 @@
-
 (function(){
 	var url = window.location.href;
 	var body = document.documentElement.outerHTML;
@@ -19,7 +18,7 @@
 	};
 
 	var getMergeUrl = function (u, stbid) {
-		return 'http://223.244.227.56:8080/ott/play/ott?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
+		return 'http://60.170.244.9:8090/ott/play/ott?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
 	};
 
 	// Get/Set Cookies
@@ -121,7 +120,6 @@
 
 			btnCode += '</span>';
 			btnDiv.innerHTML = btnCode;
-			//document.body.innerHTML += btnCode;
 			document.body.appendChild(btnDiv);
 			returnPageData();
 		};
