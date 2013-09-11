@@ -2,10 +2,7 @@
 
 $C=array();
 
-if (DEVMODE)
-	$C['ROOT_DN'] = 'api-dev.vsea.tv';
-else
-	$C['ROOT_DN'] = 'api.vsea.tv';
+$C['ROOT_DN'] = 'api-dev.vsea.tv';
 
 
 $C['ROOT'] = 'http://'.$C['ROOT_DN'].'/vseaconfig/';
