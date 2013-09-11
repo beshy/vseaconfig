@@ -1,5 +1,4 @@
 <?php
-define('DEVMODE', 0);
 include 'config.php';
 header("Content-Type: text/html; charset=UTF-8");
 

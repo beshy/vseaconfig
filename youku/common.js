@@ -9,7 +9,7 @@ var __patterns = {
 };
 
 var getMergeUrl = function (u, stbid) {
-	return 'http://223.244.227.56:8080/ott/play/ott?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
+	return '<?php echo OTT_API;?>?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
 };
 
 var item_callback=function(d){

@@ -18,33 +18,8 @@
 	};
 
 	var getMergeUrl = function (u, stbid) {
-		return 'http://60.170.244.9:8090/ott/play/ott?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
+		return '<?php echo OTT_API;?>?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
 	};
-
-	// Get/Set Cookies
-	var getCookie = function (n){
-		// Fix: '+' -> ' '(space)
-		var arr = document.cookie.match(new RegExp("(^| )"+n+"=([^;]*)(;|$)"));
-		if(arr != null) return decodeURIComponent(arr[2]).replace(/\+/g,' ');
-		return null;
-	};
-	var setCookie = function (n,v,expire,path,domain,secure){
-		if(!expire)expire=0;
-		var exp  = new Date();
-		exp.setTime(exp.getTime() + expire*24*60*60*1000);
-		document.cookie = n + "="+ escape(v) +";expires="+ exp.toGMTString()
-			+ ( (path) ? ";path=" + path : "") +
-			+ ( (domain) ? ";domain=" + domain : "") +
-			( (secure) ? ";secure" : "");
-	};
-	var delCookie = function (n){
-		var exp = new Date();
-		exp.setTime(exp.getTime() - 1);
-		var cval=getCookie(n);
-		if(cval!=null) document.cookie=n +"="+cval+";expires="+exp.toGMTString();
-	};
-
-
 
 	var returnPageData = function (force) {
 		if ( force || (data.img && data.m_url) ) {
