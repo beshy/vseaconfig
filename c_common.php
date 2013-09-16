@@ -34,6 +34,23 @@ $p=array(
 		'type' => '0',
 	),
 
+
+// ---------------------------------------------------------
+// http://tv.sohu.com/
+// ---------------------------------------------------------
+	array(
+		'url' => '^(http\:\/\/)?(?:tv|my\.tv|store\.tv)\.sohu\.com\/(?:.*?\/n.*?\.shtml|u\/[vp]w\/|view).*?$',
+		'tpl' => 'common/play',
+		'type' => '0',
+	),
+
+	array(
+		'url' => '^(http\:\/\/)?(?:tv|hot\.vrs|so\.tv|my\.tv)\.sohu\.com.*$',
+		'tpl' => 'sohu/home',
+		'type' => '0',
+	),
+
+
 );
 
 

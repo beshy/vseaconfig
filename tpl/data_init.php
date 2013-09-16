@@ -49,7 +49,7 @@ function net_curl( $url, $o=array(), $e=3600, $retryCount=3 )
 	return $c;
 } // END curl
 
-if (defined('DEBUG'))
+if (defined('DEBUG') && DEBUG)
 {
 	if (empty($f))
 		$c = net_curl($url);
