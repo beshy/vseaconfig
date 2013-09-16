@@ -381,6 +381,7 @@ function delCookie(n){
 				d.view = d.view? '<span class="view">'+d.view+'</span>' : '';
 				d.img = (d.img && d.img!='blank')? d.img : __api_url+'images/play_btn.png';
 				d.durl = (d.url.indexOf('reveal')>-1)? d.url+'&mode=getMergeUrl' : '#';
+				d.options = d.options ? d.options : '';
 
 				_data.push(d);
 			};
@@ -438,6 +439,7 @@ function delCookie(n){
 				d.view = d.view? '<span class="view">'+d.view+'</span>' : '';
 				d.img = (d.img && d.img!='blank')? d.img : __api_url+'images/play_btn.png';
 				d.durl = (d.url.indexOf('reveal')>-1)? d.url+'&mode=getMergeUrl' : '#';
+				d.options = d.options ? d.options : '';
 
 				if (!d.title || d.title=='' || !d.img || d.img=='')
 					continue;

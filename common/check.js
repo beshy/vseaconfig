@@ -4,6 +4,8 @@
 	var m = null;
 	var src = null;
 
+	var img, title;
+
 	var data = {
 		img: null,
 		title: null,
@@ -22,7 +24,7 @@
 	};
 
 	var returnPageData = function (force) {
-		if ( force || (data.img && data.m_url) ) {
+		if ( force || (data && data.img && data.m_url) ) {
 			var s = JSON.stringify(data);
 			document.cookie = "pagedata="+escape(s)+';';
 		}
@@ -66,10 +68,35 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
+	} else if ( null != (m=url.match(/.*letv.com.*/i)) && (
+		null != (m=url.match(/m\.letv\.com\/vplay\_(.*?)\.html.*/i)) ||
+		null != (m=url.match(/www\.letv\.com\/ptv\/vplay\/(.*?)\.html.*/i))
+		) ) {
+		var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
+		src = getRevealUrl(leurl);
+		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.*?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.*?)[\"\']/i)) ) {
+			data.img = img[1];
+			data.title = title[1];
+		}
+
+	} else if ( null != (m=url.match(/.*sina.cn.*/i)) && null != (m=body.match(/location\.php\?.*?url\=([^\&\'\"]+)/i)) ) {
+		var u = decodeURIComponent(m[1]);
+		src = getRevealUrl(u);
+		if ( null != (img=body.match(/poster=\"(.*?)\"/i)) && null != (title=body.match(/<h2>(.*?)<\/h2>/i)) ) {
+			data.img = img[1];
+			data.title = title[1];
+		}
+	} else if ( null != (m=url.match(/.*56.com.*/i)) && null != (m=body.match(/src\=\"http\:\/\/vxml.56.com\/html5\/(\d+)\//i)) ) {
+		ext += '&iid='+m[1];
+		src = getRevealUrl(url);
+		if ( null != (img=body.match(/url\((.*?)\)/i)) && null != (title=body.match(/keywords.*?content=\"(.*?)\"/i)) ) {
+			data.img = img[1];
+			data.title = title[1];
+		}
 	}
 
 
-	if ( null != src ) {
+	if ( null != src && '' != src ) {
 		var appendBtn = function () {
 			var btnCode = '';
 			var btnDiv = document.createElement("div");

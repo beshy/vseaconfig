@@ -1,5 +1,6 @@
 <?php
 include 'config.php';
+define('DEBUG', 0);
 header("Content-Type: text/html; charset=UTF-8");
 
 function fetch( $__FILE__, $__TYPE__='file' )
