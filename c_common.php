@@ -7,7 +7,7 @@ $p=array(
 // ---------------------------------------------------------
 
 	array(
-		'url' => '^(http\:\/\/)(m\.tv\.sohu\.com\/.*|v\.youku\.com\/v_show\/id_.*)$',
+		'url' => '^(http\:\/\/)(m\.tv\.sohu\.com\/.*|v\.youku\.com\/v_show\/id_.*|www\.tudou\.com\/.+|m\.iqiyi\.com\/.+|m\.56\.com\/.+|m\.letv\.com\/vplay.+)$',
 		'tpl' => 'common/check',
 		'type' => '1',
 	),
@@ -28,11 +28,11 @@ $p=array(
 	//	'tpl' => 'youku/home'
 	//),
 
-	array(
-		'url' => '^(http\:\/\/)?(www\.)?soku\.com\/search[_\/]video.*$',
-		'tpl' => 'youku/home',
-		'type' => '0',
-	),
+	//array(
+	//	'url' => '^(http\:\/\/)?(www\.)?soku\.com\/search[_\/]video.*$',
+	//	'tpl' => 'youku/home',
+	//	'type' => '0',
+	//),
 
 );
 
