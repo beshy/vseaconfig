@@ -1,6 +1,5 @@
 <?php
-$url='http://www.soku.com/search_video/q_hao';
-//$url='http://m.tv.sohu.com/';
+$url='http://www.youku.com/';
 //$url=dirname(__FILE__).DIRECTORY_SEPARATOR.'t.htm';
 $tpl='home.tpl';
 ?>
