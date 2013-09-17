@@ -118,11 +118,11 @@
 			if (window.stbid) {
 				var mu = [getMergeUrl(src+'&quality=0', window.stbid), getMergeUrl(src+'&quality=1', window.stbid), getMergeUrl(src+'&quality=2', window.stbid)];
 
-				data.ottsd_url= mu[0];
+				data.ottsd_url= mu[1];
 				data.otthd_url= mu[2];
 				//data.ottsp_url= mu[2];
 
-				btnCode += '<a href="'+mu[0]+'" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY NORMAL</a>'
+				btnCode += '<a href="'+mu[1]+'" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY NORMAL</a>'
 					+ '<a href="'+mu[2]+'&quality=1" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY HIGH</a>';
 
 			} else {
