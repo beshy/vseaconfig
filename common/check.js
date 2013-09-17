@@ -93,6 +93,16 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
+	} else if ( null != (m=url.match(/.*m\.iqiyi\.com\/play.html.*?vid\=([^\&])/i)) ) {
+		
+		if (window.tvInfoJs) {
+			data.img = window.tvInfoJs.vpic;
+			data.title = window.tvInfoJs.vn;
+			src = getRevealUrl(window.tvInfoJs.vu);
+		} else {
+			src = getRevealUrl(url);
+			ext += '&iid='+m[1];
+		}
 	}
 
 
@@ -102,9 +112,8 @@
 
 			var mu = [getMergeUrl(src+'&quality=0', window.stbid), getMergeUrl(src+'&quality=1', window.stbid), getMergeUrl(src+'&quality=2', window.stbid)];
 
-			data.ottsd_url= mu[0];
-			data.otthd_url= mu[1];
-			data.ottsp_url= mu[2];
+			data.ottsd_url= mu[1];
+			data.otthd_url= mu[2];
 
 			returnPageData();
 		};
