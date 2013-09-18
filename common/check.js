@@ -99,20 +99,29 @@
 			data.img = window.tvInfoJs.vpic;
 			data.title = window.tvInfoJs.vn;
 			src = getRevealUrl(window.tvInfoJs.vu);
-
-			var _a = document.getElementsByTagName('a');
-			var _clickfn=function () {
-				window.location.href=this.getAttribute('href');
-			};
-			var _qiyid = [];
-			for (var i = 0; i < _a.length; i++) {
-				if (_a[i].getAttribute('data-delegate') == 'play') {
-					_qiyid[_qiyid.length] = _a[i];
+			var fixClickTime = 1000;
+			var fixClick = function () {
+				var _a = document.getElementsByTagName('a');
+				var _qiyid = [];
+				for (var i = 0; i < _a.length; i++) {
+					if (_a[i].getAttribute('data-delegate') == 'play') {
+						_qiyid[_qiyid.length] = _a[i];
+					}
 				}
-			}
-			for(var i=0; i<_qiyid.length; i++) {
-				_qiyid[i].onclick=_clickfn;
-			}
+				for(var i=0; i<_qiyid.length; i++) {
+					(function(o){
+						o.onclick = function() {
+							window.location.href=o.getAttribute('href');
+						};
+						
+					})(_qiyid[i]);
+				}
+
+				fixClickTime *= 2;
+				setTimeout(arguments.callee, fixClickTime);
+			};
+			
+			fixClick();
 		} else {
 			src = getRevealUrl(url);
 			ext += '&iid='+m[1];
