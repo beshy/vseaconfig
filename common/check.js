@@ -99,13 +99,19 @@
 			data.img = window.tvInfoJs.vpic;
 			data.title = window.tvInfoJs.vn;
 			src = getRevealUrl(window.tvInfoJs.vu);
-			var _qiyid=document.getElementsByClassName('picList_pic');
+
+			var _a = document.getElementsByTagName('a');
+			var _clickfn=function () {
+				window.location.href=this.getAttribute('href');
+			};
+			var _qiyid = [];
+			for (var i = 0; i < _a.length; i++) {
+				if (_a[i].getAttribute('data-delegate') == 'play') {
+					_qiyid[_qiyid.length] = _a[i];
+				}
+			}
 			for(var i=0; i<_qiyid.length; i++) {
-				(function(v){
-					v.onclick=function(){
-						window.location.href=v.getAttribute('href');
-					}
-				})(_qiyid[i]);
+				_qiyid[i].onclick=_clickfn;
 			}
 		} else {
 			src = getRevealUrl(url);
