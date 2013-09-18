@@ -99,6 +99,14 @@
 			data.img = window.tvInfoJs.vpic;
 			data.title = window.tvInfoJs.vn;
 			src = getRevealUrl(window.tvInfoJs.vu);
+			var _qiyid=document.getElementsByClassName('picList_pic');
+			for(var i=0; i<_qiyid.length; i++) {
+				(function(v){
+					v.onclick=function(){
+						window.location.href=v.getAttribute('href');
+					}
+				})(_qiyid[i]);
+			}
 		} else {
 			src = getRevealUrl(url);
 			ext += '&iid='+m[1];
