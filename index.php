@@ -45,11 +45,14 @@ function fetchback( $buffer )
 // END fetchback
 
 
+$echos = isset($_GET['s'])? 0 : 1 ;
 
 if (isset($_GET['p']))
 {
 	$p=$_GET['p'];
-	echo '<script>';
+	if ($echos)
+		echo '<script>';
 	include $p.'.php';
-	echo '</script>';
+	if ($echos)
+		echo '</script>';
 }

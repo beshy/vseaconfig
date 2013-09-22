@@ -63,7 +63,7 @@ if (/^(http\:\/\/)?(www\.|)youku\.com\/v($|\/$|_showlist.*|_olist.*)/i.test(__sr
 					//setTimeout(function(){
 						//window.history.back();
 					//},10000);
-					document.write('<html><head><title>back</title></head><body>loading...<br /><a href="javascript:window.javatojs.back();" >back</a></body></html>');
+					document.write('<html><head><title>back</title></head><body><center>loading...<br /><a href="javascript:window.javatojs.back();" >back</a></back></body></html>');
 					window.location.href='<?php echo PLAY_URL;?>'+encodeURIComponent(m[1])+'&playmode=play';
 				}
 			}
