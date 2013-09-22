@@ -1,5 +1,5 @@
 <?php
-$url = 'http://tv.sohu.com/';
+$url = 'http://tv.sohu.com/s2013/newyouth/';
 //$url=dirname(__FILE__).DIRECTORY_SEPARATOR.'v.htm';
 $tpl=dirname(__FILE__).DIRECTORY_SEPARATOR.'home.tpl';
 ?>
@@ -77,7 +77,12 @@ if (/^(http\:\/\/)?hot\.vrs\.sohu\.com\/vrs_videolist\.action.*$/i.test(__src_ur
 	var pm=null;
 	if ((pm=__src_code.match(pp))!=null) {
 		__loadingfile=true;
-		document.write('<script src="http://hot.vrs.sohu.com/vrs_videolist.action?playlist_id='+pm[1]+'"><\/script>');
+
+		document.write('<script src="http://hot.vrs.sohu.com/vrs_videolist.action?playlist_id='+pm[1]+'"><\/script><script>'
+			+ 'if (__loadingfile) {if ( typeof(vrsvideolist) != "undefined" \&\& vrsvideolist !== null ){window.__parseCallback = function(){for(var i=0; i< vrsvideolist.videolist.length; i++) {var dd = vrsvideolist.videolist[i];var pd = {img: dd["videoImage"],title: dd["videoName"],subtitle: dd["videoName"],iid: dd["videoId"],url: dd["videoUrl"],playLength: dd["playLength"]};filter_video_data(pd);__parse.data.push(pd);}__parse.data_not_empty=true;};}}'
+			+ '<\/script>'
+			+ '<script src="<?php echo ROOT;?>parse.js"><\/script>');
+
 	}
 
 } else {
@@ -97,28 +102,4 @@ if (/^(http\:\/\/)?hot\.vrs\.sohu\.com\/vrs_videolist\.action.*$/i.test(__src_ur
 
 }
 
-if (__loadingfile) {
-	if ( typeof(vrsvideolist) != 'undefined' && vrsvideolist !== null )
-	{
-		//set data				
-		window.__parseCallback = function(){
-			for(var i=0; i< vrsvideolist.videolist.length; i++) {
-				var dd = vrsvideolist.videolist[i];
-				var pd = {
-					img: dd['videoImage'],
-					title: dd['videoName'],
-					subtitle: dd['videoName'],
-					iid: dd['videoId'],
-					url: dd['videoUrl'],
-					playLength: dd['playLength']
-				};
-				filter_video_data(pd);
-				__parse.data.push(pd);
-			}
-			__parse.data_not_empty=true;
-		};
-	}
-
-}
-
-<?php include "tpl/parse.php";?>
+<?php //include "tpl/parse.php";?>

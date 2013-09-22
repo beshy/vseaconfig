@@ -105,19 +105,11 @@
 				var _qiyid = [];
 				for (var i = 0; i < _a.length; i++) {
 					if (_a[i].getAttribute('data-delegate') == 'play') {
-						_qiyid[_qiyid.length] = _a[i];
+						_a[i].setAttribute('data-delegate', 'go');
 					}
 				}
-				for(var i=0; i<_qiyid.length; i++) {
-					(function(o){
-						o.onclick = function() {
-							window.location.href=o.getAttribute('href');
-						};
-						
-					})(_qiyid[i]);
-				}
-
-				fixClickTime *= 2;
+				
+				fixClickTime += 500;
 				setTimeout(arguments.callee, fixClickTime);
 			};
 			

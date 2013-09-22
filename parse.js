@@ -805,17 +805,19 @@ function delCookie(n){
 
 
 
+	setTimeout(function(){
+		if (o.ca_not_empty || o.data_not_empty) {
+			//__tpl_page += '<span>'+spendTimeString+'</span>';
+			//document.write(__tpl_page);
 
-
-	if (o.ca_not_empty || o.data_not_empty) {
-		//__tpl_page += '<span>'+spendTimeString+'</span>';
-		//document.write(__tpl_page);
-		document.body.innerHTML = __tpl_page;
-		o.show();
-	} else {
-		//document.write(__src_code);
-		document.body.innerHTML = __src_code;
-	}
+			document.body.innerHTML = __tpl_page;
+			o.show();
+		} else {
+			//document.write(__src_code);
+			document.body.innerHTML = __src_code;
+		}
+	},200);
+	
 
 
 })();
