@@ -1,5 +1,5 @@
 <?php
-$url = 'http://tv.sohu.com/s2013/newyouth/';
+$url = 'http://tv.sohu.com/';
 //$url=dirname(__FILE__).DIRECTORY_SEPARATOR.'v.htm';
 $tpl=dirname(__FILE__).DIRECTORY_SEPARATOR.'home.tpl';
 ?>
@@ -102,4 +102,6 @@ if (/^(http\:\/\/)?hot\.vrs\.sohu\.com\/vrs_videolist\.action.*$/i.test(__src_ur
 
 }
 
-<?php //include "tpl/parse.php";?>
+if (!__loadingfile) {
+	<?php include "tpl/parse.php";?>
+}
