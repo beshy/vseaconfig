@@ -68,16 +68,45 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
+
+		var fixClickTime = 1000;
+		var fixClick = function () {
+			var _a = document.getElementsByTagName('a');
+			for (var i = 0; i < _a.length; i++) {
+				(function (o) {
+					o.onclick = function () {
+						window.location.href=o.getAttribute('href');
+					};
+				})(_a[i]);
+			}
+			
+			setTimeout(arguments.callee, fixClickTime);
+		};
+		
+		fixClick();
 	} else if ( null != (m=url.match(/.*letv.com.*/i)) && (
 		null != (m=url.match(/m\.letv\.com\/vplay\_(.*?)\.html.*/i)) ||
 		null != (m=url.match(/www\.letv\.com\/ptv\/vplay\/(.*?)\.html.*/i))
 		) ) {
 		var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
 		src = getRevealUrl(leurl);
-		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.*?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.*?)[\"\']/i)) ) {
-			data.img = img[1];
+		if ( null != (title=body.match(/title\s*:\s*[\"\'](.*?)[\"\']/i)) ) {
+			//data.img = img[1];
 			data.title = title[1];
 		}
+
+		var fixClickTime = 500;
+		var fixImg = function () {
+			var _a = document.getElementsByTagName('video');
+			if (_a.length) {
+				data.img = _a[0].getAttribute('poster');
+				returnPageData();
+				return;
+			};
+			setTimeout(arguments.callee, fixClickTime);
+		};
+		
+		fixImg();
 
 	} else if ( null != (m=url.match(/.*sina.cn.*/i)) && null != (m=body.match(/location\.php\?.*?url\=([^\&\'\"]+)/i)) ) {
 		var u = decodeURIComponent(m[1]);
@@ -102,14 +131,12 @@
 			var fixClickTime = 1000;
 			var fixClick = function () {
 				var _a = document.getElementsByTagName('a');
-				var _qiyid = [];
 				for (var i = 0; i < _a.length; i++) {
 					if (_a[i].getAttribute('data-delegate') == 'play') {
 						_a[i].setAttribute('data-delegate', 'go');
 					}
 				}
 				
-				fixClickTime += 500;
 				setTimeout(arguments.callee, fixClickTime);
 			};
 			
@@ -117,6 +144,12 @@
 		} else {
 			src = getRevealUrl(url);
 			ext += '&iid='+m[1];
+		}
+	} else if ( null != (m=url.match(/.*m.(ku6.com.*)/i)) ) {
+		src = getRevealUrl('http://v.'+m[1]);
+		if ( null != (img=body.match(/vid,\s*\'(.*?)\'/i)) && null != (title=body.match(/<title>(.*?)<\/title>/i)) ) {
+			data.img = img[1];
+			data.title = title[1];
 		}
 	}
 
