@@ -2,7 +2,7 @@
 
 $C=array();
 
-$C['ROOT_DN'] = 'api-dev.vsea.tv';
+$C['ROOT_DN'] = '172.25.3.116:8080';
 
 
 $C['ROOT'] = 'http://'.$C['ROOT_DN'].'/vseaconfig/';
