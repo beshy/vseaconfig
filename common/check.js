@@ -16,11 +16,11 @@
 
 
 	var getRevealUrl = function (u) {
-		return "<?php echo PLAY_URL;?>"+encodeURIComponent(u)+ext;
+		return ["<?php echo PLAY_URL;?>"+encodeURIComponent(u)+ext, "<?php echo MERGE_URL;?>"+encodeURIComponent(u)+ext];
 	};
 
-	var getMergeUrl = function (u, stbid) {
-		return '<?php echo OTT_API;?>?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
+	var getOTTUrl = function (u) {
+		return '<?php echo OTT_API;?>?'+stbid+'&playurl='+encodeURIComponent(u);
 	};
 
 	var returnPageData = function (force) {
@@ -36,6 +36,7 @@
 		// youku
 		var vid=m[1];
 		src=getRevealUrl("http://v.youku.com/v_show/id_"+vid+".html");
+
 
 		window.__check_getYoukuData = function (d) {
 			if (d && d.data && d.data[0]) {
@@ -160,11 +161,11 @@
 			var btnDiv = document.createElement("div");
 
 			btnCode +=   '<span style="display:block; position:absolute; top:0; left:50%; margin-left:-60px; border:2px solid #666;  background:#fff; z-index:999999;opacity: 0.9;filter:alpha(opacity=9);">'
-					+ '<a href="'+src+'&quality=0" target="_blank" style="color:#000;display:block;line-height:200%;">HLS PLAY NORMAL</a>';
-			data.m_url = src+'&quality=0';
+					+ '<a href="'+src[0]+'&quality=0" target="_blank" style="color:#000;display:block;line-height:200%;">HLS PLAY NORMAL</a>';
+			data.m_url = src[0]+'&quality=0';
 
 			if (window.stbid) {
-				var mu = [getMergeUrl(src+'&quality=0', window.stbid), getMergeUrl(src+'&quality=1', window.stbid), getMergeUrl(src+'&quality=2', window.stbid)];
+				var mu = [getOTTUrl(src[1]+'&quality=0', window.stbid), getOTTUrl(src[1]+'&quality=1', window.stbid), getOTTUrl(src[1]+'&quality=2', window.stbid)];
 
 				data.ottsd_url= mu[1];
 				data.otthd_url= mu[2];
