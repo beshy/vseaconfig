@@ -1,5 +1,5 @@
 <?php
-$url = 'http://tv.sohu.com/s2012/xbb/';
+$url = 'http://so.tv.sohu.com/mts?wd=%C6%C6%B2%FA%BD%E3%C3%C3&box=1';
 //$url=dirname(__FILE__).DIRECTORY_SEPARATOR.'v.htm';
 $tpl=dirname(__FILE__).DIRECTORY_SEPARATOR.'home.tpl';
 ?>

@@ -4,11 +4,12 @@ __patterns.category.push({
 	ex_patterns: [
 		{
 			keys:['','url','category'],
-			pattern: /show-pic\"[^<>]*?>\s*<a[^<>]*?href=\"\/to\?u=([^\"\&]*)[^\"]*?\"[^<>]*?title=\"([^\"]+?)\"[^<>]*?>/i
+			//\/to\?u=
+			pattern: /show-pic\"[^<>]*?>\s*<a[^<>]*?href=\"([^\"\&]*)[^\"]*?\"[^<>]*?title=\"([^\"]+?)\"[^<>]*?>/i
 		}
 	],
 	data_patterns: [{
-		pattern: /show-pic[^<>]*?>\s*<a[^<>]*?href=\"\/to\?u=([^\"\&]*)[^\"]*?\"[^<>]*?title=\"([^\"]+?)\"[^<>]*?>\s*<img[^<>]*?src=\"(.*?)\"[^<>]*?>[\w\W]*?<\/div/ig,
+		pattern: /show-pic[^<>]*?>\s*<a[^<>]*?href=\"([^\"\&]*)[^\"]*?\"[^<>]*?title=\"([^\"]+?)\"[^<>]*?>\s*<img[^<>]*?src=\"(.*?)\"[^<>]*?>[\w\W]*?<\/div/ig,
 		keys: ['','url','title','img'],
 		ex_patterns: [
 			{
@@ -27,7 +28,7 @@ __patterns.category.push({
 	}, {
 		pattern: /serie-list[^<>]*?>[\w\W]*?<\/div/ig,
 		sub_patterns: [{
-			pattern: /<a[^<>]*?href=\"\/to\?u=([^\"\&]+)[^\"]*?\"[^<>]*?>(.*?)<\/a>/ig,
+			pattern: /<a[^<>]*?href=\"([^\"\&]+)[^\"]*?\"[^<>]*?>(.*?)<\/a>/ig,
 			keys: ['','url','title'],
 			callback: function(d){
 				if (d && d.url)
@@ -39,7 +40,8 @@ __patterns.category.push({
 	}],
 	callback: function(d){
 		if (d && d.category && d.url) {
-			d.category = '<a href="'+decodeURIComponent(d.url)+'">'+d.category+'<\/a>';
+			//d.category = '<a href="'+decodeURIComponent(d.url)+'">'+d.category+'<\/a>';
+			d.category = '<a href="'+d.url+'">'+d.category+'<\/a>';
 		}
 	}
 });
@@ -55,7 +57,7 @@ __patterns.category.push({
 		ex_patterns: [
 			{
 				keys: ['','url','title'],
-				pattern: /tit[^<>]*?>\s*<a[^<>]*?href=\"\/to\?u=([^\"\&]+)[^\"]*?\"[^>]*?>\s*(.*?)\s*<\/a>/i
+				pattern: /tit[^<>]*?>\s*<a[^<>]*?href=\"([^\"\&]+)[^\"]*?\"[^>]*?>\s*(.*?)\s*<\/a>/i
 			},
 
 			{
