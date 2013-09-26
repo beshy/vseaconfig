@@ -7,7 +7,7 @@ $p=array(
 // ---------------------------------------------------------
 
 	// array(
-	// 	'url' => '^(http\:\/\/)(m\.tv\.sohu\.com\/.*|v\.youku\.com\/v_show\/id_.*|www\.tudou\.com\/.+|m\.iqiyi\.com\/.+|m\.56\.com\/.+|m\.letv\.com\/vplay.+)$',
+	// 	'url' => '^(http\:\/\/)(m\.tv\.sohu\.com\/.*|v\.youku\.com\/v_show\/id_.*|www\.tudou\.com\/.+|m\.iqiyi\.com\/.+|m\.56\.com\/.+|m\.letv\.com\/vplay.+|m\.ku6\.com\/show\/.+)$',
 	// 	'tpl' => 'common/check',
 	// 	'type' => '1',
 	// ),
