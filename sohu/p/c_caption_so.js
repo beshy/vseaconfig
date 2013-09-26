@@ -5,11 +5,11 @@ __patterns.category.push({
 		{
 			keys:['','url','category'],
 			//\/to\?u=
-			pattern: /show-pic\"[^<>]*?>\s*<a[^<>]*?href=\"([^\"\&]*)[^\"]*?\"[^<>]*?title=\"([^\"]+?)\"[^<>]*?>/i
+			pattern: /show-pic\"[^<>]*?>\s*<a[^<>]*?href=\"(?:\/to\?u=|)([^\"\&]*)[^\"]*?\"[^<>]*?title=\"([^\"]+?)\"[^<>]*?>/i
 		}
 	],
 	data_patterns: [{
-		pattern: /show-pic[^<>]*?>\s*<a[^<>]*?href=\"([^\"\&]*)[^\"]*?\"[^<>]*?title=\"([^\"]+?)\"[^<>]*?>\s*<img[^<>]*?src=\"(.*?)\"[^<>]*?>[\w\W]*?<\/div/ig,
+		pattern: /show-pic[^<>]*?>\s*<a[^<>]*?href=\"(?:\/to\?u=|)([^\"\&]*)[^\"]*?\"[^<>]*?title=\"([^\"]+?)\"[^<>]*?>\s*<img[^<>]*?src=\"(.*?)\"[^<>]*?>[\w\W]*?<\/div/ig,
 		keys: ['','url','title','img'],
 		ex_patterns: [
 			{
@@ -57,7 +57,7 @@ __patterns.category.push({
 		ex_patterns: [
 			{
 				keys: ['','url','title'],
-				pattern: /tit[^<>]*?>\s*<a[^<>]*?href=\"([^\"\&]+)[^\"]*?\"[^>]*?>\s*(.*?)\s*<\/a>/i
+				pattern: /tit[^<>]*?>\s*<a[^<>]*?href=\"(?:\/to\?u=|)([^\"\&]+)[^\"]*?\"[^>]*?>\s*(.*?)\s*<\/a>/i
 			},
 
 			{
