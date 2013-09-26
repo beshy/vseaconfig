@@ -22,8 +22,10 @@ __patterns.category.push({
 			}
 		],
 		callback: function(d){
-			if (d && d.url)
+			if (d && d.url) {
 				d.url = decodeURIComponent(d.url);
+				filter_video_data(d);
+			}
 		}
 	}, {
 		pattern: /serie-list[^<>]*?>[\w\W]*?<\/div/ig,

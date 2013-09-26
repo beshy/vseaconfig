@@ -18,9 +18,9 @@ var filter_video_data = function(d) {
 	var m=null;
 	__processed_data[__processed_data.length]=d;
 
-	if (d && d.url && /^http\:\/\/(?:my\.|store\.)?tv\.sohu\.com\/(?:.*?\/n.*?\.shtml|u[^\/]*?\/|s\d+\/|(?:view_|web\/)?content).*$/i.test(d.url)){
+	if (d && d.url && /^http\:\/\/(?:my\.|store\.)?tv\.sohu\.com\/(?:.*?\/n.*?\.shtml|u[^\/]*?\/|s\d+\/|us\/|(?:view_|web\/)?content).*$/i.test(d.url)){
 
-		if ( (m=d.url.match(/^http\:\/\/(?:my\.|store\.)?tv\.sohu\.com\/(?:.*?\/n.*?\.shtml|u\/vw\/(\d+)|(?:view_|web\/)?content).*$/i))!=null ) {
+		if ( (m=d.url.match(/^http\:\/\/(?:my\.|store\.)?tv\.sohu\.com\/(?:.*?\/n.*?\.shtml|u\/vw\/(\d+)|us\/|(?:view_|web\/)?content).*$/i))!=null ) {
 			// single video
 			if (m[1] && m[1]!='') {
 				d.iid = m[1]; 
@@ -55,7 +55,7 @@ var filter_video_data = function(d) {
 		} else {
 			// play list
 			m=null;
-			if ((m=d.url.match(/^http\:\/\/my\.tv\.sohu\.com\/u\/p[^\/]*?\/(\d+).*$/i))!=null) {
+			if ((m=d.url.match(/^http\:\/\/my\.tv\.sohu\.com\/u.*$/i))!=null) {
 				var cvdJSON=encodeURIComponent(JSON.stringify(d));
 				d.url = 'http://my.tv.sohu.com/playlistVideo.jhtml?m=list&outType=3&size=10000&playlistId='+m[1]+'&cvdJSON='+cvdJSON;
 			} else if (d.iid) {
