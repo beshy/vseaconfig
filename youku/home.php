@@ -1,9 +1,5 @@
 <?php
 $url='http://www.youku.com/';
-<<<<<<< HEAD
-=======
-//$url='http://m.tv.sohu.com/';
->>>>>>> api-dev
 //$url=dirname(__FILE__).DIRECTORY_SEPARATOR.'t.htm';
 $tpl='home.tpl';
 ?>
