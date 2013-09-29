@@ -152,6 +152,13 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
+	} else if ( null != (m=url.match(/.*v\.ifeng\.com.*/i)) && null != (m=url.match(/.*?[\/\#]([\w\d]+\-[\w\d]+\-[\w\d]+\-[\w\d]+\-[\w\d]+).*/i)) ) {
+		ext += '&iid='+m[1];
+		src = getRevealUrl(url);
+		if ( null != (img=body.match(/image\"\s*content\=\"(.*?)\"/i)) && null != (title=body.match(/title\"\s*content\=\"(.*?)\"/i)) ) {
+			data.img = img[1];
+			data.title = title[1];
+		}
 	}
 
 
