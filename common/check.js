@@ -176,10 +176,9 @@
 
 				data.ottsd_url= mu[1];
 				data.otthd_url= mu[2];
-				//data.ottsp_url= mu[2];
 
 				btnCode += '<a href="'+mu[1]+'" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY NORMAL</a>'
-					+ '<a href="'+mu[2]+'&quality=1" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY HIGH</a>';
+					+ '<a href="'+mu[2]+'" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY HIGH</a>';
 
 			} else {
 				btnCode += '<a href="api://getStbid:'+url+'" target="_blank" style="color:#000;display:block;line-height:200%;">Scan OTT code</a>';
