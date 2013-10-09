@@ -25,6 +25,10 @@
 
 	var returnPageData = function (force) {
 		if ( force || (data && data.img && data.m_url) ) {
+			if ( !(data && data.m_url) ) {
+				document.cookie = "pagedata=null;";
+				return;
+			}
 			var s = JSON.stringify(data);
 			document.cookie = "pagedata="+escape(s)+';';
 		}
@@ -97,11 +101,17 @@
 		}
 
 		var fixClickTime = 500;
+		var totalTime = 0;
 		var fixImg = function () {
+			
+			totalTime += fixClickTime;
+			if (totalTime>6000) {
+				return returnPageData(true);
+			}
 			var _a = document.getElementsByTagName('video');
 			if (_a.length) {
 				data.img = _a[0].getAttribute('poster');
-				returnPageData();
+				returnPageData(true);
 				return;
 			};
 			setTimeout(arguments.callee, fixClickTime);
