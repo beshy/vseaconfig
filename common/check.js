@@ -1,4 +1,5 @@
 (function(){
+	console.log('init check')
 	var url = window.location.href;
 	var body = document.documentElement.outerHTML;
 	var m = null;
@@ -63,31 +64,30 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
-	} else if ( null != (m=url.match(/.*tudou.com.*/i)) && ( 
-		null != (m=body.match(/(vcode)\s*[\:\=]\s*[\"\']([^\"\']+)[\"\']/i)) ||
-		null != (m=body.match(/(iid|defaultIid)\s*[\:\=]\s*(\d+)/i))
-		) ) {
-		ext += '&'+m[1]+'='+m[2];
-		src = getRevealUrl(url);
-		if ( null != (img=body.match(/\,\s*pic\s*\:\s*[\"\'](.*?)[\"\']/i)) && null != (title=body.match(/\,\s*kw\s*\:\s*[\"\'](.*?)[\"\']/i)) ) {
-			data.img = img[1];
-			data.title = title[1];
+	} else if ( null != (m=url.match(/.*tudou.com.*/i)) && window.itemData ) {
+		var _d = window.itemData;
+		if (_d.vcode && _d.vcode!='') {
+			ext += '&vcode='+_d.vcode;
+		} else {
+			ext += '&iid='+_d.iid;
 		}
+		src = getRevealUrl(url);
+		data.img = _d.pic;
+		data.title = _d.kw;
 
-		var lastHref = false;
+		var lastVid = false;
 		var checkChange = function () {
-			var v=window.location.href;
-			if (!lastHref) {
-				lastHref = v;
-				return;
-			}
-			if (v != lastHref) {
-				clearInterval(checkChangeI);
-				var _strpos = window.location.href.indexOf('?');
-				if (_strpos > -1)
-					window.location.href=v+'&_';
-				else
-					window.location.href=v+'?_';
+			if (window.itemData) {
+				var v = window.itemData;
+				if (!lastVid) {
+					lastVid = v.iid;
+					return;
+				}
+				if (v.iid != lastVid) {
+					console.log('tudou get new location');
+					clearInterval(checkChangeI);
+					window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
+				}
 			}
 		};
 		var checkChangeI=setInterval(checkChange, 50);
@@ -156,6 +156,7 @@
 					return;
 				}
 				if (v.vid != lastVid) {
+					console.log('iqiyi get new location')
 					clearInterval(checkChangeI);
 					window.location.href='http://m.iqiyi.com/play.html?tvid='+v.tvid+'&vid='+v.vid;
 				}
