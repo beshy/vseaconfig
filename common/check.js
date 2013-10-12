@@ -201,7 +201,7 @@
 			var btnDiv = document.createElement("div");
 
 			btnCode +=   '<span style="display:block; position:absolute; top:0; left:50%; margin-left:-60px; border:2px solid #666;  background:#fff; z-index:999999;opacity: 0.9;filter:alpha(opacity=9);">'
-					+ '<a href="'+src[0]+'&quality=0" target="_blank" style="color:#000;display:block;line-height:200%;">HLS PLAY NORMAL</a>';
+					+ '<a href="'+src[0]+'&quality=0" target="_blank" style="color:#000;display:block;line-height:200%; border-bottom:1px dashed #666;">HLS PLAY NORMAL</a>';
 			data.m_url = src[0]+'&quality=0';
 
 			if (window.stbid) {
@@ -210,7 +210,7 @@
 				data.ottsd_url= mu[1];
 				data.otthd_url= mu[2];
 
-				btnCode += '<a href="'+mu[1]+'" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY NORMAL</a>'
+				btnCode += '<a href="'+mu[1]+'" target="_blank" style="color:#000;display:block;line-height:200%;border-bottom:1px dashed #666;">OTT PLAY NORMAL</a>'
 					+ '<a href="'+mu[2]+'" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY HIGH</a>';
 
 			} else {
