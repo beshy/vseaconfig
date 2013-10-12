@@ -34,7 +34,9 @@ var filter_video_data = function(d) {
 				d.url='<?php echo PLAY_URL;?>'+encodeURIComponent(d.url);
 				if (d.iid)
 					d.url=d.url+'&iid='+d.iid;
-	
+				
+				d.options = '';
+
 				if (window.stbid) {
 					var mu = [getMergeUrl(d.url+'&playmode=play&quality=0', window.stbid), getMergeUrl(d.url+'&playmode=play&quality=1', window.stbid), getMergeUrl(d.url+'&playmode=play&quality=2', window.stbid)];
 					d.options += '<a href="'+mu[1]+'">OTTN</a> |'
