@@ -34,15 +34,11 @@ var filter_video_data = function(d) {
 				d.url='<?php echo PLAY_URL;?>'+encodeURIComponent(d.url);
 				if (d.iid)
 					d.url=d.url+'&iid='+d.iid;
-
-				d.options = '<a href="'+d.url+'&playmode=play&quality=1">HLSH</a> |'
-						+ ' <a href="'+d.url+'&playmode=play&quality=2">HLSS</a> |';
 	
 				if (window.stbid) {
 					var mu = [getMergeUrl(d.url+'&playmode=play&quality=0', window.stbid), getMergeUrl(d.url+'&playmode=play&quality=1', window.stbid), getMergeUrl(d.url+'&playmode=play&quality=2', window.stbid)];
-					d.options += '<a href="'+mu[0]+'">OTTN</a> |'
-							+ '<a href="'+mu[1]+'">OTTH</a> |'
-							+ ' <a href="'+mu[2]+'">OTTS</a>';
+					d.options += '<a href="'+mu[1]+'">OTTN</a> |'
+							+ '<a href="'+mu[2]+'">OTTH</a>';
 				} else {
 					d.options += '<a href="api://getStbid:'+__src_url+'">Scan</a>'
 				}
