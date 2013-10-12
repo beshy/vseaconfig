@@ -3,7 +3,7 @@
 <div class="title_frame frame"><span class="title">{title}</span>{subtitle}{view}</div>
 </a>
 <div class="option_frame frame"><a href="javascript:void(0);" onclick="$(this).parent().siblings('.options').toggle();" class="optionlink"></a></div>
-<div class="options" style="display:none;" >
+<div class="options" style="display:block;" >
 {options}
 </div>
 </li>
