@@ -18,7 +18,7 @@ if (window.nettype && window.nettype == 'u') {
 }
 
 var getMergeUrl = function (u, stbid) {
-	return ott_api+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
+	return ott_api+'?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
 };
 
 __processed_data=[];
