@@ -9,8 +9,16 @@ var __patterns = {
 	select: []
 };
 
+var ott_apis = <?php echo OTT_API;?>;
+var ott_api = '';
+if (window.nettype && window.nettype == 'u') {
+	ott_api=ott_apis[1];
+} else {
+	ott_api=ott_apis[0];
+}
+
 var getMergeUrl = function (u, stbid) {
-	return '<?php echo OTT_API;?>?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
+	return ott_api+'?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
 };
 
 __processed_data=[];
