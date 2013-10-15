@@ -144,7 +144,7 @@
 		}
 	} else if ( null != (m=url.match(/.*m\.iqiyi\.com\/play.html.*?tvid\=([^\&]+).*?vid\=([^\&]+)/i)) ) {
 		
-		ext += '&iid='+m[1]+'/'+m[2];
+		ext += '&iid='+m[1]+'_'+m[2];
 		if (window.tvInfoJs) {
 			data.img = window.tvInfoJs.vpic;
 			data.title = window.tvInfoJs.vn;
