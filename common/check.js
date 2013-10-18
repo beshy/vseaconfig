@@ -93,9 +93,9 @@
 					console.log('tudou get new location');
 					clearInterval(checkChangeI);
 					if (v.acode && v.acode != '')
-						window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
-					else
 						window.location.href='http://www.tudou.com/albumplay/'+v.acode+'/'+v.icode+'.html';
+					else
+						window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
 				}
 			}
 		};
