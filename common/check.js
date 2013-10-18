@@ -82,7 +82,10 @@
 				if (v.iid != lastVid) {
 					console.log('tudou get new location');
 					clearInterval(checkChangeI);
-					window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
+					if (v.acode && v.acode != '')
+						window.location.href='http://www.tudou.com/albumplay/'+v.acode+'/'+v.icode+'.html';
+					else
+						window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
 				}
 			}
 		};
