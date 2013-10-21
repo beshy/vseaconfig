@@ -14,6 +14,8 @@ var filter_video_data = function(d) {
 	var m=null;
 	__processed_data[__processed_data.length]=d;
 
+	var api_url = (window.netip && window.netip!='')? 'http://'+window.netip+':8080/app/reveal/?u=' : '<?php echo PLAY_URL;?>';
+
 	if (d && d.url && /^http\:\/\/(?:my\.|store\.)?tv\.sohu\.com\/(?:.*?\/n.*?\.shtml|u[^\/]*?\/|s\d+\/|us\/|(?:view_|web\/)?content).*$/i.test(d.url)){
 
 		if ( (m=d.url.match(/^http\:\/\/(?:my\.|store\.)?tv\.sohu\.com\/(?:.*?\/n.*?\.shtml|u\/vw\/(\d+)|us\/|(?:view_|web\/)?content).*$/i))!=null ) {
@@ -27,7 +29,7 @@ var filter_video_data = function(d) {
 				d.url = 'http://hot.vrs.sohu.com/vrs_videolist.action?playlist_id='+d.pid+'&cvdJSON='+cvdJSON;
 				return;
 			} else {
-				d.url='<?php echo PLAY_URL;?>'+encodeURIComponent(d.url);
+				d.url=api_url+encodeURIComponent(d.url);
 				if (d.iid)
 					d.url=d.url+'&iid='+d.iid;
 			}
