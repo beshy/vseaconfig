@@ -39,7 +39,7 @@ var filter_video_data = function(d) {
 				d.url = 'http://hot.vrs.sohu.com/vrs_videolist.action?playlist_id='+d.pid+'&cvdJSON='+cvdJSON;
 				return;
 			} else {
-				d.url='<?php echo PLAY_URL;?>'+encodeURIComponent(d.url);
+				d.url=PLAY_URL+encodeURIComponent(d.url);
 				if (d.iid)
 					d.url=d.url+'&iid='+d.iid;
 

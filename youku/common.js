@@ -21,7 +21,7 @@ var item_callback=function(d){
 		m = null;
 		if ( (m=d.url.match(up))!=null )
 		{
-			d.url='<?php echo PLAY_URL;?>'+encodeURIComponent(d.url);
+			d.url=PLAY_URL+encodeURIComponent(d.url);
 			d.options = '<a href="'+d.url+'&playmode=play&quality=1">HLSH</a> |'
 					+ ' <a href="'+d.url+'&playmode=play&quality=2">HLSS</a> |';
 

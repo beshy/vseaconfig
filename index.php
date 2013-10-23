@@ -52,6 +52,8 @@ if (isset($_GET['p']))
 	$p=$_GET['p'];
 	if ($echos)
 		echo '<script>stbid=123;';
+
+	echo "\nwindow.PLAY_URL = (window.netip && window.netip!='')? 'http://'+window.netip+':8080/app/reveal/?u=' : '".PLAY_URL."';\n";
 	include $p.'.php';
 	if ($echos)
 		echo '</script>';

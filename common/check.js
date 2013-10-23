@@ -23,7 +23,7 @@
 	}
 
 	var getRevealUrl = function (u) {
-		return ["<?php echo PLAY_URL;?>"+encodeURIComponent(u)+ext, "<?php echo MERGE_URL;?>"+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
+		return [PLAY_URL+encodeURIComponent(u)+ext, "<?php echo MERGE_URL;?>"+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
 	};
 
 	var getOTTUrl = function (u) {

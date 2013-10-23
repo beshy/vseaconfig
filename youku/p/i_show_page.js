@@ -2,7 +2,7 @@
 ;
 var c_show_page=function(d){
 	d.img='blank';
-	d.url='<?php echo PLAY_URL;?>'+encodeURIComponent(d.url)+'&playmode=play';
+	d.url=PLAY_URL+encodeURIComponent(d.url)+'&playmode=play';
 };
 
 __patterns.item.push({
