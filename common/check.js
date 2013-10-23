@@ -14,20 +14,13 @@
 	};
 	// &seek=OTT
 	var ext = '&playmode=play';
-	var ott_apis = <?php echo OTT_API;?>;
-	var ott_api = '';
-	if (window.nettype && window.nettype == 'u') {
-		ott_api=ott_apis[1];
-	} else {
-		ott_api=ott_apis[0];
-	}
 
 	var getRevealUrl = function (u) {
 		return [PLAY_URL+encodeURIComponent(u)+ext, "<?php echo MERGE_URL;?>"+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
 	};
 
 	var getOTTUrl = function (u) {
-		return ott_api+'?'+stbid+'&playurl='+encodeURIComponent(u);
+		return OTT_API+'?'+stbid+'&playurl='+encodeURIComponent(u);
 	};
 
 	var returnPageData = function (force) {
