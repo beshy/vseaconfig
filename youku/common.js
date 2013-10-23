@@ -9,7 +9,7 @@ var __patterns = {
 };
 
 var getMergeUrl = function (u, stbid) {
-	return '<?php echo OTT_API;?>?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
+	return OTT_API+'?'+stbid+'&playurl='+encodeURIComponent(u+'&mode=getMergeUrl&seek=OTT');
 };
 
 var item_callback=function(d){
