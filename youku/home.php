@@ -65,7 +65,7 @@ if (/^(http\:\/\/)?(www\.|)youku\.com\/v($|\/$|_showlist.*|_olist.*)/i.test(__sr
 						//window.history.back();
 					//},10000);
 					document.write('<html><head><title>back</title></head><body><center>loading...<br /><a href="javascript:window.javatojs.back();" >back</a></back></body></html>');
-					window.location.href='<?php echo PLAY_URL;?>'+encodeURIComponent(m[1])+'&playmode=play';
+					window.location.href=PLAY_URL+encodeURIComponent(m[1])+'&playmode=play';
 				}
 			}
 		};

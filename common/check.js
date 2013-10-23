@@ -23,7 +23,7 @@
 	}
 
 	var getRevealUrl = function (u) {
-		return ["<?php echo PLAY_URL;?>"+encodeURIComponent(u)+ext, "<?php echo MERGE_URL;?>"+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
+		return [PLAY_URL+encodeURIComponent(u)+ext, "<?php echo MERGE_URL;?>"+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
 	};
 
 	var getOTTUrl = function (u) {
@@ -92,7 +92,10 @@
 				if (v.iid != lastVid) {
 					console.log('tudou get new location');
 					clearInterval(checkChangeI);
-					window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
+					if (v.acode && v.acode != '')
+						window.location.href='http://www.tudou.com/albumplay/'+v.acode+'/'+v.icode+'.html';
+					else
+						window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
 				}
 			}
 		};
@@ -142,15 +145,15 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
-	} else if ( null != (m=url.match(/.*m\.iqiyi\.com\/play.html.*?tvid.*?vid\=([^\&])/i)) ) {
+	} else if ( null != (m=url.match(/.*m\.iqiyi\.com\/play.html.*?tvid\=([^\&]+).*?vid\=([^\&]+)/i)) ) {
 		
+		ext += '&iid='+m[1]+'_'+m[2];
 		if (window.tvInfoJs) {
 			data.img = window.tvInfoJs.vpic;
 			data.title = window.tvInfoJs.vn;
 			src = getRevealUrl(window.tvInfoJs.vu);
 		} else {
 			src = getRevealUrl(url);
-			ext += '&iid='+m[1];
 		}
 
 		var lastVid = false;
