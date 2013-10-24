@@ -52,6 +52,7 @@ if (isset($_GET['p']))
 	$p=$_GET['p'];
 	if ($echos)
 		echo '<script>';
+	include 'prefix.js';
 	include $p.'.php';
 	if ($echos)
 		echo '</script>';
