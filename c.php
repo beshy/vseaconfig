@@ -7,4 +7,4 @@ foreach($p as &$v)
 }
 
 
-file_put_contents('config_ott-vsea.json',json_encode($p));
+file_put_contents('config_sts-demo.json',json_encode($p));

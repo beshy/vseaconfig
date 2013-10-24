@@ -9,6 +9,7 @@ var __patterns = {
 	select: []
 };
 
+
 __processed_data=[];
 var filter_video_data = function(d) {
 	var m=null;
@@ -29,7 +30,8 @@ var filter_video_data = function(d) {
 				d.url = 'http://hot.vrs.sohu.com/vrs_videolist.action?playlist_id='+d.pid+'&cvdJSON='+cvdJSON;
 				return;
 			} else {
-				d.url=api_url+encodeURIComponent(d.url);
+
+				d.url=PLAY_URL+encodeURIComponent(d.url);
 				if (d.iid)
 					d.url=d.url+'&iid='+d.iid;
 			}

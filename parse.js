@@ -63,7 +63,7 @@ if (undefined !== window.__parse_debug)
 if (undefined == window.__api_url)
 	__api_url = 'http://api.vsea.tv/';
 if (undefined == window.__api_reveal)
-	__api_reveal = (window.netip && window.netip!='')? 'http://'+window.netip+':8080/app/reveal/?u=' : __api_url+'app/reveal/?u=';
+	__api_reveal = window.PLAY_URL;
 
 
 

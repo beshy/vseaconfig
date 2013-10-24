@@ -1,4 +1,5 @@
 (function(){
+	console.log('init check')
 	var url = window.location.href;
 	var body = document.documentElement.outerHTML;
 	var m = null;
@@ -14,17 +15,20 @@
 	// &seek=OTT
 	var ext = '&playmode=play';
 
-
 	var getRevealUrl = function (u) {
-		return ["<?php echo PLAY_URL;?>"+encodeURIComponent(u)+ext, "<?php echo MERGE_URL;?>"+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
+		return [PLAY_URL+encodeURIComponent(u)+ext, PLAY_URL+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
 	};
 
 	var getOTTUrl = function (u) {
-		return '<?php echo OTT_API;?>?'+stbid+'&playurl='+encodeURIComponent(u);
+		return OTT_API+'?'+stbid+'&playurl='+encodeURIComponent(u);
 	};
 
 	var returnPageData = function (force) {
 		if ( force || (data && data.img && data.m_url) ) {
+			if ( !(data && data.m_url) ) {
+				document.cookie = "pagedata=null;";
+				return;
+			}
 			var s = JSON.stringify(data);
 			document.cookie = "pagedata="+escape(s)+';';
 		}
@@ -59,32 +63,37 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
-	} else if ( null != (m=url.match(/.*tudou.com.*/i)) && ( 
-		null != (m=body.match(/(vcode)\s*[\:\=]\s*[\"\']([^\"\']+)[\"\']/i)) ||
-		null != (m=body.match(/(iid|defaultIid)\s*[\:\=]\s*(\d+)/i))
-		) ) {
-		ext += '&'+m[1]+'='+m[2];
-		src = getRevealUrl(url);
-		if ( null != (img=body.match(/\,\s*pic\s*\:\s*[\"\'](.*?)[\"\']/i)) && null != (title=body.match(/\,\s*kw\s*\:\s*[\"\'](.*?)[\"\']/i)) ) {
-			data.img = img[1];
-			data.title = title[1];
+	} else if ( null != (m=url.match(/.*tudou.com.*/i)) && window.itemData ) {
+		var _d = window.itemData;
+		if (_d.vcode && _d.vcode!='') {
+			ext += '&vcode='+_d.vcode;
+		} else {
+			ext += '&iid='+_d.iid;
 		}
+		src = getRevealUrl(url);
+		data.img = _d.pic;
+		data.title = _d.kw;
 
-		var fixClickTime = 1000;
-		var fixClick = function () {
-			var _a = document.getElementsByTagName('a');
-			for (var i = 0; i < _a.length; i++) {
-				(function (o) {
-					o.onclick = function () {
-						window.location.href=o.getAttribute('href');
-					};
-				})(_a[i]);
+		var lastVid = false;
+		var checkChange = function () {
+			if (window.itemData) {
+				var v = window.itemData;
+				if (!lastVid) {
+					lastVid = v.iid;
+					return;
+				}
+				if (v.iid != lastVid) {
+					console.log('tudou get new location');
+					clearInterval(checkChangeI);
+					if (v.acode && v.acode != '')
+						window.location.href='http://www.tudou.com/albumplay/'+v.acode+'/'+v.icode+'.html';
+					else
+						window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
+				}
 			}
-			
-			setTimeout(arguments.callee, fixClickTime);
 		};
+		var checkChangeI=setInterval(checkChange, 50);
 		
-		fixClick();
 	} else if ( null != (m=url.match(/.*letv.com.*/i)) && (
 		null != (m=url.match(/m\.letv\.com\/vplay\_(.*?)\.html.*/i)) ||
 		null != (m=url.match(/www\.letv\.com\/ptv\/vplay\/(.*?)\.html.*/i))
@@ -97,11 +106,17 @@
 		}
 
 		var fixClickTime = 500;
+		var totalTime = 0;
 		var fixImg = function () {
+			
+			totalTime += fixClickTime;
+			if (totalTime>6000) {
+				return returnPageData(true);
+			}
 			var _a = document.getElementsByTagName('video');
 			if (_a.length) {
 				data.img = _a[0].getAttribute('poster');
-				returnPageData();
+				returnPageData(true);
 				return;
 			};
 			setTimeout(arguments.callee, fixClickTime);
@@ -123,32 +138,59 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
-	} else if ( null != (m=url.match(/.*m\.iqiyi\.com\/play.html.*?vid\=([^\&])/i)) ) {
+	} else if ( null != (m=url.match(/.*m\.iqiyi\.com\/play.html.*?tvid\=([^\&]+).*?vid\=([^\&]+)/i)) ) {
 		
+		ext += '&iid='+m[1]+'_'+m[2];
 		if (window.tvInfoJs) {
 			data.img = window.tvInfoJs.vpic;
 			data.title = window.tvInfoJs.vn;
 			src = getRevealUrl(window.tvInfoJs.vu);
-			var fixClickTime = 1000;
-			var fixClick = function () {
-				var _a = document.getElementsByTagName('a');
-				for (var i = 0; i < _a.length; i++) {
-					if (_a[i].getAttribute('data-delegate') == 'play') {
-						_a[i].setAttribute('data-delegate', 'go');
-					}
-				}
-				
-				setTimeout(arguments.callee, fixClickTime);
-			};
-			
-			fixClick();
 		} else {
 			src = getRevealUrl(url);
-			ext += '&iid='+m[1];
 		}
+
+		var lastVid = false;
+		var checkChange = function () {
+			if (window.tvInfoJs) {
+				var v = window.tvInfoJs;
+				if (!lastVid) {
+					lastVid = v.vid;
+					return;
+				}
+				if (v.vid != lastVid) {
+					console.log('iqiyi get new location')
+					clearInterval(checkChangeI);
+					window.location.href='http://m.iqiyi.com/play.html?tvid='+v.tvid+'&vid='+v.vid;
+				}
+			}
+		};
+		var checkChangeI=setInterval(checkChange, 50);
+
+
+		var fixClickTime = 1000;
+		var fixClick = function () {
+			var _a = document.getElementsByTagName('a');
+			for (var i = 0; i < _a.length; i++) {
+				if (_a[i].getAttribute('data-delegate') == 'play') {
+					_a[i].setAttribute('data-delegate', 'go');
+				}
+			}
+			
+			setTimeout(arguments.callee, fixClickTime);
+		};
+		
+		fixClick();
+
 	} else if ( null != (m=url.match(/.*m.(ku6.com.*)/i)) ) {
 		src = getRevealUrl('http://v.'+m[1]);
 		if ( null != (img=body.match(/vid,\s*\'(.*?)\'/i)) && null != (title=body.match(/<title>(.*?)<\/title>/i)) ) {
+			data.img = img[1];
+			data.title = title[1];
+		}
+	} else if ( null != (m=url.match(/.*v\.ifeng\.com.*/i)) && null != (m=url.match(/.*?[\/\#]([\w\d]+\-[\w\d]+\-[\w\d]+\-[\w\d]+\-[\w\d]+).*/i)) ) {
+		ext += '&iid='+m[1];
+		src = getRevealUrl(url);
+		if ( null != (img=body.match(/image\"\s*content\=\"(.*?)\"/i)) && null != (title=body.match(/title\"\s*content\=\"(.*?)\"/i)) ) {
 			data.img = img[1];
 			data.title = title[1];
 		}
@@ -161,7 +203,7 @@
 			var btnDiv = document.createElement("div");
 
 			btnCode +=   '<span style="display:block; position:absolute; top:0; left:50%; margin-left:-60px; border:2px solid #666;  background:#fff; z-index:999999;opacity: 0.9;filter:alpha(opacity=9);">'
-					+ '<a href="'+src[0]+'&quality=0" target="_blank" style="color:#000;display:block;line-height:200%;">HLS PLAY NORMAL</a>';
+					+ '<a href="'+src[0]+'&quality=0" target="_blank" style="color:#000;display:block;line-height:200%; border-bottom:1px dashed #666;">HLS PLAY NORMAL</a>';
 			data.m_url = src[0]+'&quality=0';
 
 			if (window.stbid) {
@@ -169,10 +211,9 @@
 
 				data.ottsd_url= mu[1];
 				data.otthd_url= mu[2];
-				//data.ottsp_url= mu[2];
 
-				btnCode += '<a href="'+mu[1]+'" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY NORMAL</a>'
-					+ '<a href="'+mu[2]+'&quality=1" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY HIGH</a>';
+				btnCode += '<a href="'+mu[1]+'" target="_blank" style="color:#000;display:block;line-height:200%;border-bottom:1px dashed #666;">OTT PLAY NORMAL</a>'
+					+ '<a href="'+mu[2]+'" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY HIGH</a>';
 
 			} else {
 				btnCode += '<a href="api://getStbid:'+url+'" target="_blank" style="color:#000;display:block;line-height:200%;">Scan OTT code</a>';

@@ -46,5 +46,6 @@ function fetchback( $buffer )
 if (isset($_GET['p']))
 {
 	$p=$_GET['p'];
+	include 'prefix.js';
 	include $p.'.php';
 }
