@@ -2,7 +2,7 @@
 	console.log('init check')
 	var url = window.location.href;
 	var body = document.documentElement.outerHTML;
-	var m = null;
+	var m = null, m2 = null;
 	var src = null;
 
 	var img, title;
@@ -56,9 +56,10 @@
 
 
 
-	} else if ( null != (m=url.match(/tv.sohu.com/i)) && null != (m=body.match(/\s+vid\s*[\:\=]\s*\"\d+\"/i)) ) {
+	} else if ( null != (m=url.match(/tv.sohu.com/i)) && null != (m=body.match(/\s+vid\s*[\:\=]\s*\"(\d+)\"/i)) && null != (m2=body.match(/og\:url.*?content\=\"(.+?)\"/i)) ) {
 		// sohu
-		src=getRevealUrl(url);
+		ext += '&iid='+m[1];
+		src=getRevealUrl(m2[1]);
 		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.*?)\"/i)) && null != (title=body.match(/keywords.*?content=\"(.*?)\"/i)) ) {
 			data.img = img[1];
 			data.title = title[1];
