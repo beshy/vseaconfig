@@ -98,7 +98,7 @@
 		) ) {
 		var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
 		src = getRevealUrl(leurl);
-		if ( null != (title=body.match(/title\s*:\s*[\"\'](.*?)[\"\']/i)) && null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.*?)\"/i)) ) {
+		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.*?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.*?)[\"\']/i)) ) {
 			data.img = img[1];
 			data.title = title[1];
 		}
@@ -173,6 +173,17 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
+
+		(function(){
+			var checkUrl = function () {
+				if (window.location.href != url) {
+					window.location.href = window.location.href.replace(/\#/i, '?#');
+				} else {
+					setTimeout(checkUrl, 500);
+				}
+			};
+			setTimeout(checkUrl, 500);
+		})();
 	}
 
 
