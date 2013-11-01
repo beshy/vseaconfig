@@ -101,29 +101,10 @@
 		) ) {
 		var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
 		src = getRevealUrl(leurl);
-		if ( null != (title=body.match(/title\s*:\s*[\"\'](.*?)[\"\']/i)) ) {
-			//data.img = img[1];
+		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.*?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.*?)[\"\']/i)) ) {
+			data.img = img[1];
 			data.title = title[1];
 		}
-
-		var fixClickTime = 500;
-		var totalTime = 0;
-		var fixImg = function () {
-			
-			totalTime += fixClickTime;
-			if (totalTime>6000) {
-				return returnPageData(true);
-			}
-			var _a = document.getElementsByTagName('video');
-			if (_a.length) {
-				data.img = _a[0].getAttribute('poster');
-				returnPageData(true);
-				return;
-			};
-			setTimeout(arguments.callee, fixClickTime);
-		};
-		
-		fixImg();
 
 	} else if ( null != (m=url.match(/.*sina.cn.*/i)) && null != (m=body.match(/location\.php\?.*?url\=([^\&\'\"]+)/i)) ) {
 		var u = decodeURIComponent(m[1]);
