@@ -176,6 +176,17 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
+
+		(function(){
+			var checkUrl = function () {
+				if (window.location.href != url) {
+					window.location.href = window.location.href.replace(/\#/i, '?#');
+				} else {
+					setTimeout(checkUrl, 500);
+				}
+			};
+			setTimeout(checkUrl, 500);
+		})();
 	}
 
 
