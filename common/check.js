@@ -38,19 +38,41 @@
 		var vid=m[1];
 		src=getRevealUrl("http://v.youku.com/v_show/id_"+vid+".html");
 
-
+		var __youku_complete = 0;
 		window.__check_getYoukuData = function (d) {
 			if (d && d.data && d.data[0]) {
 				data.img = d.data[0].logo;
 				data.title = d.data[0].title;
 			}
-			returnPageData();
+			__youku_complete--;
+			if (__youku_complete<1) {
+				returnPageData();
+			}
 		};
 
+		window.__get_youkuAd = function (d) {
+			__youku_complete--;
+			if (d && d.VAL && d.VAL[0]) {
+				var ad_url = getRevealUrl(d.VAL[0].RS);
+				data.ad_url = ad_url[1]+'&site=vod';
+			}
+			__youku_complete--;
+			if (__youku_complete<1) {
+				returnPageData();
+			}
+		};
+
+		__youku_complete++;
 		var e=document.createElement('script'); 
 		e.setAttribute('src', 'http://v.youku.com/player/getPlaylist/VideoIDS/'+vid+'/Pf/4?__callback=__check_getYoukuData'); 
 		document.head.appendChild(e);
 
+		if (window.adsParams) {
+			__youku_complete++;
+			var e2=document.createElement('script'); 
+			e2.setAttribute('src', 'http://valf.atm.youku.com/vf?vl=256'+window.adsParams+'&callback=__get_youkuAd'); 
+			document.head.appendChild(e2);
+		}
 
 
 	} else if ( null != (m=url.match(/tv.sohu.com/i)) && null != (m=body.match(/\s+vid\s*[\:\=]\s*\"(\d+)\"/i)) && null != (m2=body.match(/og\:url.*?content\=\"(.+?)\"/i)) ) {
