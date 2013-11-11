@@ -13,7 +13,7 @@ $p=array(
 	),
 
 	array(
-		'url' => '^(http\:\/\/)[^\/]+\/app\/(vqq|yinyuetai)\/.*$',
+		'url' => '^[^\/]*?\:\/\/[^\/]+\/app\/(vqq|yinyuetai\/movie).*$',
 		'tpl' => 'common/blank',
 		'type' => '1',
 	),

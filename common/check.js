@@ -1,7 +1,29 @@
+<?php
+//$url='http://www.youku.com/';
+//include "tpl/data_init.php";
+?>
+//document.write(__src_code);
+
+
+;(function(){
+	if (window.sendOTTData)
+		return;
+	window.OTT_JSON_DATA = '';
+	window.sendOTTData = {};
+	window.sendOTTData.send = function (s) {
+		window.OTT_JSON_DATA = s;
+		var f = document.createElement('iframe');
+		f.style.display = 'none';
+		document.documentElement.appendChild(f);
+		f.src = "cmd://SEND_OTT_DATA";
+	};
+
+})();
+
 (function(){
 	console.log('init check')
-	var url = window.location.href;
-	var body = document.documentElement.outerHTML;
+	var url = (window.__src_url) ? window.__src_url : window.location.href;
+	var body = (window.__src_code) ? window.__src_code : document.documentElement.outerHTML;
 	var m = null, m2 = null;
 	var src = null;
 
@@ -10,6 +32,7 @@
 	var data = {
 		img: null,
 		title: null,
+		cache: url,
 		m_url: null
 	};
 	// &seek=OTT
@@ -20,20 +43,77 @@
 		return [PLAY_URL+encodeURIComponent(u)+ext, MERGE_URL+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
 	};
 
+	var returnPageDataDone = false;
 	var returnPageData = function (force) {
+		if (returnPageDataDone)
+			return;
 		if ( force || (data && data.img && data.m_url) ) {
+			returnPageDataDone = true;
 			if ( !(data && data.m_url) ) {
+				console.log('set page data null');
 				document.cookie = "pagedata=null;";
 				return;
 			}
 			var s = JSON.stringify(data);
-			document.cookie = "pagedata="+escape(s)+';';
+			console.log('set page data: '+s);
+			document.cookie = "pagedata="+s+';';
+			if (window.sendOTTData) {
+				console.log('call sendOTTData.send');
+				window.sendOTTData.send(s);
+			} else {
+				console.log('no sendOTTData method.');
+			}
 		}
+	};
+
+	var simpleAjax = function (url, sf, ef, df) {
+		var xhr;
+		if (window.XMLHttpRequest){
+			xhr=new XMLHttpRequest();
+		} else {
+			xhr=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xhr.onreadystatechange = function(){
+			if(xhr.readyState === 4){
+				if(xhr.status === 200){
+					if (sf) {
+						sf(xhr.responseText);
+					}
+				} else {
+					if (ef) {
+						ef(xhr.status);
+					}
+				}
+
+				if (df) {
+					df(xhr.status);
+				}
+			}
+		}
+
+		xhr.open("GET",url,true);
+		xhr.send();
+	};
+
+	var insertScript = function (url) {
+		var e=document.createElement('script'); 
+		e.setAttribute('src', url); 
+		document.head.appendChild(e);
+	};
+
+	var JSONparse = function (s) {
+		var d;
+		try {
+			d=JSON.parse(s);
+		} catch(e) {
+
+		}
+		return d;
 	};
 
 
 	// http://v.youku.com/v_show/id_XNTkyNjY1NjQ0.html?f=19532522&ev=1
-	if ( null != (m=url.match(/^http\:\/\/v\.youku\.com\/v_show\/id_([^\&\/\.]*).*$/i)) ) {
+	if ( null != (m=url.match(/^http\:\/\/v\.youku\.com\/v_show\/id_([^\&\#\/\.]*).*$/i)) ) {
 		// youku
 		var vid=m[1];
 		src=getRevealUrl("http://v.youku.com/v_show/id_"+vid+".html");
@@ -44,18 +124,17 @@
 				data.img = d.data[0].logo;
 				data.title = d.data[0].title;
 			}
-			__youku_complete--;
-			if (__youku_complete<1) {
-				returnPageData();
-			}
+			__youku_done();
 		};
 
-		window.__get_youkuAd = function (d) {
-			__youku_complete--;
+		window.__youkuAd = function (d) {
 			if (d && d.VAL && d.VAL[0]) {
 				var ad_url = getRevealUrl(d.VAL[0].RS);
 				data.ad_url = ad_url[1]+'&site=vod';
 			}
+			__youku_done();
+		};
+		var __youku_done = function () {
 			__youku_complete--;
 			if (__youku_complete<1) {
 				returnPageData();
@@ -63,17 +142,17 @@
 		};
 
 		__youku_complete++;
-		var e=document.createElement('script'); 
-		e.setAttribute('src', 'http://v.youku.com/player/getPlaylist/VideoIDS/'+vid+'/Pf/4?__callback=__check_getYoukuData'); 
-		document.head.appendChild(e);
+		insertScript('http://v.youku.com/player/getPlaylist/VideoIDS/'+vid+'/Pf/4?__callback=__check_getYoukuData');
 
 		if (window.adsParams) {
 			__youku_complete++;
-			var e2=document.createElement('script'); 
-			e2.setAttribute('src', 'http://valf.atm.youku.com/vf?vl=256'+window.adsParams+'&callback=__get_youkuAd'); 
-			document.head.appendChild(e2);
+			insertScript('http://valf.atm.youku.com/vf?vl=256'+window.adsParams+'&callback=__youkuAd');
+		} else if (window.videoId) {
+			__youku_complete++;
+			insertScript('http://valf.atm.youku.com/vf?vl=256&ct=a&cs=2148&td=0'+'&s='+window.showId+'&v='+window.videoId+'&u='+window.videoOwnerID+'&callback=__youkuAd');
 		}
 
+		setTimeout(__youku_done, 2000);
 
 	} else if ( null != (m=url.match(/tv.sohu.com/i)) && null != (m=body.match(/\s+vid\s*[\:\=]\s*\"(\d+)\"/i)) && null != (m2=body.match(/og\:url.*?content\=\"(.+?)\"/i)) ) {
 		// sohu
@@ -125,7 +204,7 @@
 			data.title = title[1];
 		}
 
-	} else if ( null != (m=url.match(/.*sina.cn.*/i)) && null != (m=body.match(/location\.php\?.*?url\=([^\&\'\"]+)/i)) ) {
+	} else if ( null != (m=url.match(/.*sina.cn.*/i)) && null != (m=body.match(/location\.php\?.*?url\=([^\&\#\'\"]+)/i)) ) {
 		var u = decodeURIComponent(m[1]);
 		src = getRevealUrl(u);
 		if ( null != (img=body.match(/poster=\"(.*?)\"/i)) && null != (title=body.match(/<h2>(.*?)<\/h2>/i)) ) {
@@ -139,7 +218,7 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
-	} else if ( null != (m=url.match(/.*m\.iqiyi\.com\/play.html.*?tvid\=([^\&]+).*?vid\=([^\&]+)/i)) ) {
+	} else if ( null != (m=url.match(/.*m\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
 		
 		ext += '&iid='+m[1]+'_'+m[2];
 		if (window.tvInfoJs) {
@@ -153,6 +232,11 @@
 		var lastVid = false;
 		var checkChange = function () {
 			if (window.tvInfoJs) {
+				if (!returnPageDataDone) {
+					data.img = window.tvInfoJs.vpic;
+					data.title = window.tvInfoJs.vn;
+					returnPageData();
+				}
 				var v = window.tvInfoJs;
 				if (!lastVid) {
 					lastVid = v.vid;
