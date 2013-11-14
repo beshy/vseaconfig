@@ -1,9 +1,3 @@
-<?php
-//$url='http://www.youku.com/';
-//include "tpl/data_init.php";
-?>
-//document.write(__src_code);
-
 
 ;(function(){
 	if (window.sendOTTData)
@@ -50,13 +44,11 @@
 		if ( force || (data && data.img && data.m_url) ) {
 			returnPageDataDone = true;
 			if ( !(data && data.m_url) ) {
-				console.log('set page data null');
-				document.cookie = "pagedata=null;";
+				console.log('get page data null');
 				return;
 			}
 			var s = JSON.stringify(data);
-			console.log('set page data: '+s);
-			document.cookie = "pagedata="+s+';';
+			console.log('get page data: '+s);
 			if (window.sendOTTData) {
 				console.log('call sendOTTData.send');
 				window.sendOTTData.send(s);
@@ -110,6 +102,10 @@
 		}
 		return d;
 	};
+
+	function rnd(start, end){
+	    return Math.floor(Math.random() * (end - start) + start);
+	}
 
 
 	// http://v.youku.com/v_show/id_XNTkyNjY1NjQ0.html?f=19532522&ev=1
@@ -290,6 +286,18 @@
 			};
 			setTimeout(checkUrl, 500);
 		})();
+	} else if ( null != (m=url.match(/.*[mv].(pptv.com.*)/i)) && window.m_info && window.webcfg ) {
+		ext += '&iid=' + webcfg.channel_id;
+		src = getRevealUrl('http://v.'+m[1]);
+		
+		data.img = 'http://s'+rnd(1, 4)+'.pplive.cn/v/cap/'+webcfg.channel_id+'/h160.jpg';
+		data.title = m_info.title;
+	} else if ( null != (m=url.match(/.*[mv].(pps.tv\/play.*)/i)) && window.page_var ) {
+		ext += '&iid=' + page_var.url_key;
+		src = getRevealUrl('http://v.'+m[1]);
+		
+		data.img = page_var.video_img;
+		data.title = page_var.file_title;
 	}
 
 
