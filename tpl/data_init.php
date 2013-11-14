@@ -57,8 +57,8 @@ if (defined('DEBUG') && DEBUG)
 		$c = file_get_contents($f);
 		
 	$c = mb_convert_encoding($c, 'UTF-8','ascii,GB2312,gbk,UTF-8');
-	//if (empty($f))
-	//	$c = str_replace('<head>', '<head><base href="'.$url.'" target="_blank">', $c);
+	if (empty($f))
+		$c = str_replace('<head>', '<head><base href="'.$url.'" target="_blank">', $c);
 
 	$j = json_encode($c);
 	if (empty($j))

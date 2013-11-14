@@ -51,8 +51,7 @@ if (isset($_GET['p']))
 {
 	$p=$_GET['p'];
 	if ($echos)
-		echo '<script>stbid=123;';
-
+		echo '<script>';
 	include 'prefix.js';
 	include $p.'.php';
 	if ($echos)
