@@ -108,6 +108,15 @@
 	}
 
 
+	var parseComplete = 0;
+	var parseDone = function () {
+		parseComplete--;
+		if (parseComplete<1) {
+			returnPageData();
+		}
+	};
+
+
 	// http://v.youku.com/v_show/id_XNTkyNjY1NjQ0.html?f=19532522&ev=1
 	if ( null != (m=url.match(/^http\:\/\/v\.youku\.com\/v_show\/id_([^\&\#\/\.]*).*$/i)) ) {
 		// youku
@@ -120,7 +129,7 @@
 				data.img = d.data[0].logo;
 				data.title = d.data[0].title;
 			}
-			__youku_done();
+			parseDone();
 		};
 
 		window.__youkuAd = function (d) {
@@ -128,27 +137,21 @@
 				var ad_url = getRevealUrl(d.VAL[0].RS);
 				data.ad_url = ad_url[1]+'&site=vod';
 			}
-			__youku_done();
-		};
-		var __youku_done = function () {
-			__youku_complete--;
-			if (__youku_complete<1) {
-				returnPageData();
-			}
+			parseDone();
 		};
 
-		__youku_complete++;
+		parseComplete++;
 		insertScript('http://v.youku.com/player/getPlaylist/VideoIDS/'+vid+'/Pf/4?__callback=__check_getYoukuData');
 
 		if (window.adsParams) {
-			__youku_complete++;
+			parseComplete++;
 			insertScript('http://valf.atm.youku.com/vf?vl=256'+window.adsParams+'&callback=__youkuAd');
 		} else if (window.videoId) {
-			__youku_complete++;
+			parseComplete++;
 			insertScript('http://valf.atm.youku.com/vf?vl=256&ct=a&cs=2148&td=0'+'&s='+window.showId+'&v='+window.videoId+'&u='+window.videoOwnerID+'&callback=__youkuAd');
 		}
 
-		setTimeout(__youku_done, 2000);
+		setTimeout(parseDone, 2000);
 
 	} else if ( null != (m=url.match(/tv.sohu.com/i)) && null != (m=body.match(/\s+vid\s*[\:\=]\s*\"(\d+)\"/i)) && null != (m2=body.match(/og\:url.*?content\=\"(.+?)\"/i)) ) {
 		// sohu
@@ -158,12 +161,33 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
+
+		window.__sohuAd = function (d) {
+			console.log('call __sohuAd', d);
+			if (d && d.data && d.oad != '') {
+				d.data.oad = d.data.oad.replace(/\'/g,'"');
+				var dd = JSONparse(d.data.oad);
+				console.log('get ad data', dd);
+				if (dd && dd[0] && dd[0][0]) {
+					var ad_url = getRevealUrl(dd[0][0]);
+					data.ad_url = ad_url[1]+'&site=vod';
+				}
+			}
+			parseDone();
+		};
+
+		if (window.VideoData && window.VideoData.vid && window.VideoData.tvid && window.VideoData.sid) {
+			parseComplete++;
+			insertScript('http://v.aty.sohu.com/v?type=vrs&al='+VideoData.sid+'&vid='+VideoData.vid+'&tvid='+VideoData.tvid+'&c=tv&fee=0&isIf=0&du='+VideoData.duration+'&out=0&uid=&qd=&autoPlay=1&callback=__sohuAd&pageUrl='+url);
+		}
+		
+		setTimeout(parseDone, 2000);
 	} else if ( null != (m=url.match(/.*tudou.com.*/i)) && window.itemData ) {
 		var _d = window.itemData;
 		if (_d.vcode && _d.vcode!='') {
 			ext += '&vcode='+_d.vcode;
 		} else {
-			ext += '&iid='+_d.iid;
+			//ext += '&iid='+_d.iid;
 		}
 		src = getRevealUrl(url);
 		data.img = _d.pic;
@@ -188,6 +212,22 @@
 			}
 		};
 		var checkChangeI=setInterval(checkChange, 50);
+
+		window.__youkuAd = function (d) {
+			if (d && d.VAL && d.VAL[0]) {
+				var ad_url = getRevealUrl(d.VAL[0].RS);
+				data.ad_url = ad_url[1]+'&site=vod';
+			}
+			parseDone();
+		};
+
+		// check ad
+		if (window.itemData && window.itemData.iid && window.itemData.oid && window.aid) {
+			parseComplete++;
+			insertScript('http://valf.atm.youku.com/vf?vl=256&ct=a&cs=2148&td=0'+'&s='+aid+'&v='+itemData.iid+'&u='+itemData.oid+'&callback=__youkuAd');
+		}
+		
+		setTimeout(parseDone, 2000);
 		
 	} else if ( null != (m=url.match(/.*letv.com.*/i)) && (
 		null != (m=url.match(/m\.letv\.com\/vplay\_(.*?)\.html.*/i)) ||
@@ -217,6 +257,7 @@
 	} else if ( null != (m=url.match(/.*m\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
 		
 		ext += '&iid='+m[1]+'_'+m[2];
+		var lastVid = m[2];
 		if (window.tvInfoJs) {
 			data.img = window.tvInfoJs.vpic;
 			data.title = window.tvInfoJs.vn;
@@ -225,7 +266,6 @@
 			src = getRevealUrl(url);
 		}
 
-		var lastVid = false;
 		var checkChange = function () {
 			if (window.tvInfoJs) {
 				if (!returnPageDataDone) {
@@ -238,6 +278,7 @@
 					lastVid = v.vid;
 					return;
 				}
+				
 				if (v.vid != lastVid) {
 					console.log('iqiyi get new location')
 					clearInterval(checkChangeI);
@@ -268,7 +309,7 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
-	} else if ( null != (m=url.match(/.*v\.ifeng\.com.*/i)) && null != (m=url.match(/.*?[\/\#]([\w\d]+\-[\w\d]+\-[\w\d]+\-[\w\d]+\-[\w\d]+).*/i)) ) {
+	} else if ( null != (m=url.match(/.*v\.ifeng\.com.*/i)) && (null != (m=url.match(/([\w\d]+\-[\w\d]+\-[\w\d]+\-[\w\d]+\-[\w\d]+)/i)) || null != (m=body.match(/([\w\d]+\-[\w\d]+\-[\w\d]+\-[\w\d]+\-[\w\d]+)/i)) ) ) {
 		ext += '&iid='+m[1];
 		src = getRevealUrl(url);
 		if ( null != (img=body.match(/image\"\s*content\=\"(.*?)\"/i)) && null != (title=body.match(/title\"\s*content\=\"(.*?)\"/i)) ) {
@@ -298,8 +339,18 @@
 		
 		data.img = page_var.video_img;
 		data.title = page_var.file_title;
+	} else if ( null != (m=url.match(/.*?app\/yinyuetai\/movie.*/i)) && window.__PAGE_DATA ) {
+		ext += '&iid=' + __PAGE_DATA.iid;
+		src = getRevealUrl(__PAGE_DATA.url);
+		data.title = __PAGE_DATA.title;
+		data.img = __PAGE_DATA.img;
 	}
 
+
+	// check hidePlay button
+	if  (window.hidePlayButton && window.SHOW_TAB=='no') {
+		window.hidePlayButton();
+	}
 
 	if ( null != src && '' != src ) {
 		var appendBtn = function () {
