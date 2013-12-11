@@ -43,7 +43,7 @@
 
 	var returnPageDataDone = false;
 	var returnPageData = function (force) {
-		if (returnPageDataDone)
+		if (returnPageDataDone || parseComplete>0)
 			return;
 		if ( force || (data && data.img && data.m_url) ) {
 			returnPageDataDone = true;
