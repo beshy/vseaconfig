@@ -30,7 +30,7 @@
 		m_url: null
 	};
 	// &seek=OTT
-	var ext = '&playmode=play';
+	var ext = '';
 
 
 	var getRevealUrl = function (u) {
@@ -121,6 +121,15 @@
 		}
 	};
 
+	window.__getAdLocation = function (d) {
+		data.ad_url = d.location;
+		parseDone();
+	};
+
+	var getAdLocation = function (u) {
+		parseComplete++;
+		insertScript(u+'&site=vod&rtype=json&callback=__getAdLocation');
+	};
 
 	// http://v.youku.com/v_show/id_XNTkyNjY1NjQ0.html?f=19532522&ev=1
 	if ( null != (m=url.match(/^http\:\/\/v\.youku\.com\/v_show\/id_([^\&\#\/\.]*).*$/i)) ) {
@@ -140,8 +149,9 @@
 		window.__youkuAd = function (d) {
 			if (d && d.VAL && d.VAL[0]) {
 				var ad_url = getRevealUrl(d.VAL[0].RS);
-				data.ad_url = ad_url[1]+'&site=vod';
+				getAdLocation(ad_url[1]);
 			}
+
 			parseDone();
 		};
 
@@ -156,7 +166,7 @@
 			insertScript('http://valf.atm.youku.com/vf?vl=256&ct=a&cs=2148&td=0'+'&s='+window.showId+'&v='+window.videoId+'&u='+window.videoOwnerID+'&callback=__youkuAd');
 		}
 
-		setTimeout(parseDone, 2000);
+		setTimeout(parseDone, 5000);
 
 	} else if ( null != (m=url.match(/tv.sohu.com/i)) && null != (m=body.match(/\s+vid\s*[\:\=]\s*\"(\d+)\"/i)) && null != (m2=body.match(/og\:url.*?content\=\"(.+?)\"/i)) ) {
 		// sohu
@@ -175,7 +185,7 @@
 				console.log('get ad data', dd);
 				if (dd && dd[0] && dd[0][0]) {
 					var ad_url = getRevealUrl(dd[0][0]);
-					data.ad_url = ad_url[1]+'&site=vod';
+					getAdLocation(ad_url[1]);
 				}
 			}
 			parseDone();
@@ -186,7 +196,7 @@
 			insertScript('http://v.aty.sohu.com/v?type=vrs&al='+VideoData.sid+'&vid='+VideoData.vid+'&tvid='+VideoData.tvid+'&c=tv&fee=0&isIf=0&du='+VideoData.duration+'&out=0&uid=&qd=&autoPlay=1&callback=__sohuAd&pageUrl='+url);
 		}
 		
-		setTimeout(parseDone, 2000);
+		setTimeout(parseDone, 5000);
 	} else if ( null != (m=url.match(/.*tudou.com.*/i)) && window.itemData ) {
 		var _d = window.itemData;
 		if (_d.vcode && _d.vcode!='') {
@@ -221,7 +231,7 @@
 		window.__youkuAd = function (d) {
 			if (d && d.VAL && d.VAL[0]) {
 				var ad_url = getRevealUrl(d.VAL[0].RS);
-				data.ad_url = ad_url[1]+'&site=vod';
+				getAdLocation(ad_url[1]);
 			}
 			parseDone();
 		};
@@ -232,7 +242,7 @@
 			insertScript('http://valf.atm.youku.com/vf?vl=256&ct=a&cs=2148&td=0'+'&s='+aid+'&v='+itemData.iid+'&u='+itemData.oid+'&callback=__youkuAd');
 		}
 		
-		setTimeout(parseDone, 2000);
+		setTimeout(parseDone, 5000);
 		
 	} else if ( null != (m=url.match(/.*letv.com.*/i)) && (
 		null != (m=url.match(/m\.letv\.com\/vplay\_(.*?)\.html.*/i)) ||
