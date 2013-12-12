@@ -51,6 +51,7 @@
 				console.log('get page data null');
 				return;
 			}
+			data.title = escape(data.title);
 			var s = JSON.stringify(data);
 			console.log('get page data: '+s);
 			if (window.sendOTTData) {
