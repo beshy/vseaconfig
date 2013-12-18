@@ -14,6 +14,7 @@ $C['API_REVEAL'] = $C['API_URL'].'app/reveal/?u=';
 $C['OTT_API'] = '["",""]';
 
 $C['MERGE_URL'] = 'http://172.25.3.116:8080/app/reveal/?u=';
+$C['MERGE_API'] = 'http://172.25.3.116:8080/app/reveal/';
 
 foreach($C as $k => $v) {
 	if (!defined($k))
