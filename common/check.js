@@ -29,6 +29,7 @@
 		cache: url,
 		param: '',
 		adnum: 0,
+		adtimes: [],
 		m_url: null
 	};
 	// &seek=OTT
@@ -50,6 +51,7 @@
 	window.__getAdNum = function (d) {
 		if (d && d.srcs) {
 			data.adnum = d.srcs.length;
+			data.adtimes = d.durations;
 		}
 		parseDone();
 	};
