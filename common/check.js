@@ -396,6 +396,17 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
+	} else if ( null != (m=url.match(/.*?mv\.yinyuetai\.com\/.*/i)) ) {
+		var setPlayVideoHere = function () {
+			window.playVideoHere = function (t, id) {
+				window.location.href='http://v.yinyuetai.com/video/'+id;
+			}
+
+			setTimeout(setPlayVideoHere, 1000);
+		}
+
+		setPlayVideoHere();
+		
 	} else if ( null != (m=url.match(/.*?yinyuetai.com\/playlist\/.*/i)) ) {
 		var lastTitle = false;
 		var redirected = false;
@@ -441,7 +452,7 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
-	} 
+	}
 
 
 	// check hidePlay button
