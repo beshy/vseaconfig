@@ -421,7 +421,27 @@
 		};
 
 		checkPlay();
-	}
+	} else if ( null != (m=url.match(/.*?yinyuetai.com\/wap\/video\/(\d+).*/i)) ) {
+		var yurl = 'http://v.yinyuetai.com/video/'+m[1];
+		src = getRevealUrl(yurl);
+		data.param = getParam(yurl);
+		
+		if ( null != (title=body.match(/<h1[^<>]*?title[^<>]*?>([\w\W]*?)<\/h1>/i)) && null != (img=body.match(/<img[^<>]*?src\=\"(.*?)\"[^<>]*?>/i)) ) {
+			data.img = img[1];
+			data.title = title[1];
+		}
+	} else if ( null != (m=url.match(/.*?yinyuetai.com\/wap\/video\/(\d+).*/i)) || null != (m=body.match(/data-videoid\=\"(\d+)\"/i)) ) {
+		
+		var yurl = 'http://v.yinyuetai.com/video/'+m[1];
+		src = getRevealUrl(yurl);
+		data.param = getParam(yurl);
+		
+		
+		if ( null != (title=body.match(/<h1[^<>]*?title[^<>]*?>([\w\W]*?)<\/h1>/i)) && null != (img=body.match(/<img[^<>]*?src\=\"(.*?)\"[^<>]*?>/i)) ) {
+			data.img = img[1];
+			data.title = title[1];
+		}
+	} 
 
 
 	// check hidePlay button
