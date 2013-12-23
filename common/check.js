@@ -205,24 +205,6 @@
 			data.title = title[1];
 		}
 
-		// window.__sohuAd = function (d) {
-		// 	console.log('call __sohuAd', d);
-		// 	if (d && d.data && d.oad != '') {
-		// 		d.data.oad = d.data.oad.replace(/\'/g,'"');
-		// 		var dd = JSONparse(d.data.oad);
-		// 		console.log('get ad data', dd);
-		// 		if (dd && dd[0] && dd[0][0]) {
-		// 			var ad_url = getRevealUrl(dd[0][0]);
-		// 			getAdLocation(ad_url[1]);
-		// 		}
-		// 	}
-		// 	parseDone();
-		// };
-
-		// if (window.VideoData && window.VideoData.vid && window.VideoData.tvid && window.VideoData.sid) {
-		// 	getAdLocation('http://v.aty.sohu.com/v?type=vrs&al='+VideoData.sid+'&vid='+VideoData.vid+'&tvid='+VideoData.tvid+'&c=tv&fee=0&isIf=0&du='+VideoData.duration+'&out=0&uid=&qd=&autoPlay=1&pageUrl='+url);
-		// }
-
 		if (window.VideoData && window.VideoData.vid && window.VideoData.tvid && window.VideoData.sid) {			
 			getAdNum(VideoData.sid+'_'+VideoData.vid+'_'+VideoData.tvid+'_'+VideoData.duration);
 		}
@@ -400,6 +382,39 @@
 		data.param = getParam(__PAGE_DATA.url);
 		data.title = __PAGE_DATA.title;
 		data.img = __PAGE_DATA.img;
+	} else if ( null != (m=url.match(/.*?yinyuetai.com\/video\/.*/i)) ) {
+		src = getRevealUrl(url);
+		data.param = getParam(url);
+		
+		if ( null != (title=body.match(/title\"\s*content=\"(.*?)\"/i)) && null != (img=body.match(/image\"\s*content=\"(.*?)\"/i)) ) {
+			data.img = img[1];
+			data.title = title[1];
+		}
+	} else if ( null != (m=url.match(/.*?yinyuetai.com\/playlist\/.*/i)) ) {
+		var lastTitle = false;
+		var redirected = false;
+		var checkPlay = function () {
+			if (redirected)
+				return;
+			if (window.$) {
+				$(function(){
+					var o = $('.J_video_info > a');
+					if (o.length>0) {
+						if (lastTitle) {
+							if (lastTitle != o[0].innerHTML && window.location.href != o[0].href) {
+								window.location.href = o[0].href;
+								redirected = true;
+							}
+						} else if (o[0].innerHTML) {
+							lastTitle = o[0].innerHTML;
+						}
+					}
+				});
+			}
+			setTimeout(checkPlay, 100);
+		};
+
+		checkPlay();
 	}
 
 
