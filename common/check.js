@@ -29,7 +29,7 @@
 		cache: url,
 		param: '',
 		adnum: 0,
-		adtimes: [],
+		adtimes: '-1',
 		m_url: null
 	};
 	// &seek=OTT
