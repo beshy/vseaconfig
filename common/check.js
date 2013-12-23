@@ -164,6 +164,7 @@
 	if ( null != (m=url.match(/^http\:\/\/v\.youku\.com\/v_show\/id_([^\&\#\/\.]*).*$/i)) ) {
 		// youku
 		var vid=m[1];
+
 		var youkuUrl = "http://v.youku.com/v_show/id_"+vid+".html"
 		src=getRevealUrl(youkuUrl);
 		data.param = getParam(youkuUrl);
@@ -180,6 +181,7 @@
 			}
 			parseDone();
 		};
+
 
 		parseComplete++;
 		insertScript('http://v.youku.com/player/getPlaylist/VideoIDS/'+vid+'/Pf/4?__callback=__check_getYoukuData');
@@ -239,6 +241,8 @@
 					else
 						window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
 				}
+
+
 			}
 		};
 		var checkChangeI=setInterval(checkChange, 50);
@@ -248,11 +252,26 @@
 		// 	getAdLocation('http://valf.atm.youku.com/vf?vl=256&ct=a&cs=2148&td=0'+'&s='+aid+'&v='+itemData.iid+'&u='+itemData.oid);
 		// }
 
-		if (window.itemData && window.itemData.iid) {
-			var showId = window.aid ? window.aid : '0';
-			var videoId = window.itemData.iid;
-			var videoOwnerID = window.itemData.oid ? window.itemData.oid : '';
-			getAdNum(showId+'_'+videoId+'_'+videoOwnerID);
+		var checkTudouAd = function () {
+			if (window.itemData && window.itemData.iid) {
+				var showId = window.aid ? window.aid : '0';
+				var videoId = window.itemData.iid;
+				var videoOwnerID = window.itemData.oid ? window.itemData.oid : '';
+				getAdNum(showId+'_'+videoId+'_'+videoOwnerID);
+				return true;
+			} else {
+				return false;
+			}
+
+		};
+
+		if ( !checkTudouAd() ) {
+			parseComplete++;
+			setTimeout(function () {
+
+				checkTudouAd();
+				parseDone();
+			}, 500);
 		}
 		
 		setTimeout(parseDone, 5000);
@@ -264,9 +283,12 @@
 		var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
 		src = getRevealUrl(leurl);
 		data.param = getParam(leurl);
-		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.*?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.*?)[\"\']/i)) ) {
+		console.log('check letv');
+		//if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.+?)[\"\']/i)) ) {
+		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && window.info ) {
 			data.img = img[1];
-			data.title = title[1];
+			//data.title = title[1];
+			data.title = window.info.title;
 		}
 
 	} else if ( null != (m=url.match(/.*sina.cn.*/i)) && null != (m=body.match(/location\.php\?.*?url\=([^\&\#\'\"]+)/i)) ) {
@@ -285,56 +307,43 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
-	} else if ( null != (m=url.match(/.*m\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
-		
-		ext += '&iid='+m[1]+'_'+m[2];
-		var lastVid = m[2];
-		if (window.tvInfoJs) {
-			data.img = window.tvInfoJs.vpic;
-			data.title = window.tvInfoJs.vn;
-			src = getRevealUrl(window.tvInfoJs.vu);
-			data.param = getParam(window.tvInfoJs.vu);
-		} else {
-			src = getRevealUrl(url);
-			data.param = getParam(url);
+	//} else if ( null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
+	} else if ( null != (m=url.match(/.*\.iqiyi\.com/i)) ) {
+		//ext += '&iid='+m[1]+'_'+m[2];
+		src = getRevealUrl(url);
+		data.param = getParam(url);
+
+		var lastVid = '';
+		if (window.Q.PageInfo) {
+			data.img = Q.PageInfo.playInfo.vpic;
+			data.title = Q.PageInfo.playInfo.vn;
+			lastVid = Q.PageInfo.playInfo.vid;
 		}
 
 		var checkChange = function () {
 			if (window.tvInfoJs) {
+				var info = window.tvInfoJs;
 				if (!returnPageDataDone) {
-					data.img = window.tvInfoJs.vpic;
-					data.title = window.tvInfoJs.vn;
+					data.img = info.vpic;
+					data.title = info.vn;
 					returnPageData();
 				}
-				var v = window.tvInfoJs;
+
 				if (!lastVid) {
-					lastVid = v.vid;
+					lastVid = info.vid;
 					return;
 				}
 				
-				if (v.vid != lastVid) {
+				if (info.vid != lastVid) {
 					console.log('iqiyi get new location')
 					clearInterval(checkChangeI);
-					window.location.href='http://m.iqiyi.com/play.html?tvid='+v.tvid+'&vid='+v.vid;
+					//window.location.href='http://m.iqiyi.com/play.html?tvid='+v.tvid+'&vid='+v.vid;
+					window.location.href = info.vu;
 				}
 			}
 		};
 		var checkChangeI=setInterval(checkChange, 50);
 
-
-		var fixClickTime = 1000;
-		var fixClick = function () {
-			var _a = document.getElementsByTagName('a');
-			for (var i = 0; i < _a.length; i++) {
-				if (_a[i].getAttribute('data-delegate') == 'play') {
-					_a[i].setAttribute('data-delegate', 'go');
-				}
-			}
-			
-			setTimeout(arguments.callee, fixClickTime);
-		};
-		
-		fixClick();
 
 	} else if ( null != (m=url.match(/.*m.(ku6.com.*)/i)) ) {
 		src = getRevealUrl('http://v.'+m[1]);
