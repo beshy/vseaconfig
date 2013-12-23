@@ -48,7 +48,18 @@
 	window.__getAdNum = function (d) {
 		if (d && d.srcs) {
 			data.adnum = d.srcs.length;
-			data.adtimes = d.durations;
+			
+			if (d.durations) {
+				data.adtimes = d.durations;
+			} else {
+				data.adtimes = Array(d.srcs.length);
+				for (var i = data.adtimes.length - 1; i >= 0; i--) {
+					data.adtimes[i] = '-1';
+				}
+			}
+
+			data.adtimes = data.adtimes.join(',');
+			
 		}
 		parseDone();
 	};
