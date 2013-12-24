@@ -26,7 +26,7 @@
 	var data = {
 		img: null,
 		title: null,
-		cache: url,
+		cache: url+'v1',
 		param: '',
 		adnum: 0,
 		adtimes: [],
