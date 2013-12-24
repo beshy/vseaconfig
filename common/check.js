@@ -294,13 +294,21 @@
 		var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
 		src = getRevealUrl(leurl);
 		data.param = getParam(leurl);
+		
+
+		getAdNum(m[1]);
+		setTimeout(parseDone, 5000);
+
 		console.log('check letv');
+
 		//if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.+?)[\"\']/i)) ) {
 		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && window.info ) {
 			data.img = img[1];
 			//data.title = title[1];
 			data.title = window.info.title;
 		}
+
+		
 
 	} else if ( null != (m=url.match(/.*sina.cn.*/i)) && null != (m=body.match(/location\.php\?.*?url\=([^\&\#\'\"]+)/i)) ) {
 		var u = decodeURIComponent(m[1]);
@@ -329,6 +337,8 @@
 			data.img = Q.PageInfo.playInfo.vpic;
 			data.title = Q.PageInfo.playInfo.vn;
 			lastVid = Q.PageInfo.playInfo.vid;
+			getAdNum();
+			setTimeout(parseDone, 5000);
 		}
 
 		var checkChange = function () {
@@ -389,13 +399,21 @@
 		
 		data.img = 'http://s'+rnd(1, 4)+'.pplive.cn/v/cap/'+webcfg.channel_id+'/h160.jpg';
 		data.title = m_info.title;
-	} else if ( null != (m=url.match(/.*[mv].(pps.tv\/play.*)/i)) && window.page_var ) {
+
+		getAdNum();
+		setTimeout(parseDone, 5000);
+
+	} else if ( null != (m=url.match(/.*?\.(pps\.tv\/play.*)/i)) && window.page_var ) {
 		ext += '&iid=' + page_var.url_key;
 		src = getRevealUrl('http://v.'+m[1]);
 		data.param = getParam('http://v.'+m[1]);
 		
 		data.img = page_var.video_img;
 		data.title = page_var.file_title;
+
+		getAdNum();
+		setTimeout(parseDone, 5000);
+
 	} else if ( null != (m=url.match(/.*?app\/yinyuetai\/movie.*/i)) && window.__PAGE_DATA ) {
 		ext += '&iid=' + __PAGE_DATA.iid;
 		src = getRevealUrl(__PAGE_DATA.url);
