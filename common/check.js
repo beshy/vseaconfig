@@ -400,13 +400,22 @@
 		getAdNum();
 		setTimeout(parseDone, 5000);
 
-	} else if ( null != (m=url.match(/.*?\.(pps\.tv\/play.*)/i)) && window.page_var ) {
-		ext += '&iid=' + page_var.url_key;
+	} else if ( null != (m=url.match(/.*?\.(pps\.tv\/play.*)/i)) ) {
+		//ext += '&iid=' + page_var.url_key;
 		src = getRevealUrl('http://v.'+m[1]);
 		data.param = getParam('http://v.'+m[1]);
+		if ( window.page_var ) {
+			data.img = page_var.video_img;
+			data.title = page_var.file_title;
+		} else if ( null != (img=body.match(/<img[^<>]*?src\=\"(.*?)\"[^<>]*?alt\=\"(.*?)\"[^<>]*?>/i)) ) {
+			data.img = img[1];
+			data.title = img[2];
+		}
+		// } else if ( window._PAGE_CONF && window._PAGE_CONF.SNSShare ) {
+		// 	data.img = window._PAGE_CONF.SNSShare.sharepic;
+		// 	data.title = unescape(window._PAGE_CONF.SNSShare.sharetitle);
+		// }
 		
-		data.img = page_var.video_img;
-		data.title = page_var.file_title;
 
 		getAdNum();
 		setTimeout(parseDone, 5000);
