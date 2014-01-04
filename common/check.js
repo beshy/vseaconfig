@@ -326,14 +326,43 @@
 			data.img = img[1];
 			data.title = title[1];
 		}
-	//} else if ( null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
+	} else if ( null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
+		ext += '&iid='+m[1]+'_'+m[2];
+		src = getRevealUrl(url);
+		data.param = getParam(url);
+
+		var lastVid = '';
+		var checkChange = function () {
+			if (window.tvInfoJs) {
+				var info = window.tvInfoJs;
+				if (!returnPageDataDone) {
+					data.img = info.vpic;
+					data.title = info.vn;
+					returnPageData();
+				}
+
+				if (!lastVid) {
+					lastVid = info.vid;
+					return;
+				}
+				
+				if (info.vid != lastVid) {
+					console.log('iqiyi get new location')
+					clearInterval(checkChangeI);
+					//window.location.href='http://m.iqiyi.com/play.html?tvid='+v.tvid+'&vid='+v.vid;
+					window.location.href = info.vu;
+				}
+			}
+		};
+		var checkChangeI=setInterval(checkChange, 50);
+		
 	} else if ( null != (m=url.match(/.*\.iqiyi\.com/i)) ) {
 		//ext += '&iid='+m[1]+'_'+m[2];
 		src = getRevealUrl(url);
 		data.param = getParam(url);
 
 		var lastVid = '';
-		if (window.Q.PageInfo) {
+		if (window.Q.PageInfo  && Q.PageInfo.playInfo && Q.PageInfo.playInfo.vn) {
 			data.img = Q.PageInfo.playInfo.vpic;
 			data.title = Q.PageInfo.playInfo.vn;
 			lastVid = Q.PageInfo.playInfo.vid;
