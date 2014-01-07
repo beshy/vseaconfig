@@ -478,4 +478,18 @@
 	}
 
 	returnPageData();
+
+})();
+
+
+
+(function(){
+	var src = window.location.href;
+	var checkLocation = function () {
+		if (src != window.location.href) {
+			clearInterval(checkLocationI);
+			window.location.reload();
+		}
+	};
+	var checkLocationI=setInterval(checkLocation, 50);
 })();

@@ -2,7 +2,7 @@
 
 $C=array();
 
-$C['ROOT_DN'] = '172.25.3.116:8080';
+$C['ROOT_DN'] = 'xmgapi.vsea.tv';
 
 
 $C['ROOT'] = 'http://'.$C['ROOT_DN'].'/vseaconfig/';
@@ -13,8 +13,8 @@ $C['API_REVEAL'] = $C['API_URL'].'app/reveal/?u=';
 
 $C['OTT_API'] = '["",""]';
 
-$C['MERGE_URL'] = 'http://'.$C['ROOT_DN'].'/app/reveal/?u=';
-$C['MERGE_API'] = 'http://'.$C['ROOT_DN'].'/app/reveal/';
+$C['MERGE_URL'] = 'http://ottapi.xmbtn.com:8080/app/reveal/?u=';
+$C['MERGE_API'] = 'http://ottapi.xmbtn.com:8080/app/reveal/';
 
 foreach($C as $k => $v) {
 	if (!defined($k))
