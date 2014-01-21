@@ -13,8 +13,11 @@ $C['API_REVEAL'] = $C['API_URL'].'app/reveal/?u=';
 
 $C['OTT_API'] = '["",""]';
 
-$C['MERGE_URL'] = 'http://ottapi.xmbtn.com:8080/app/reveal/?u=';
-$C['MERGE_API'] = 'http://ottapi.xmbtn.com:8080/app/reveal/';
+//$C['MERGE_URL'] = 'http://ottapi.xmbtn.com:8080/app/reveal/?u=';
+//$C['MERGE_API'] = 'http://ottapi.xmbtn.com:8080/app/reveal/';
+
+$C['MERGE_URL'] = 'http://ottapi.xmbtn.com/reveal?u=';
+$C['MERGE_API'] = 'http://ottapi.xmbtn.com/reveal';
 
 foreach($C as $k => $v) {
 	if (!defined($k))
