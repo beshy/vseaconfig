@@ -19,6 +19,8 @@ $C['OTT_API'] = '["",""]';
 $C['MERGE_URL'] = 'http://ottapi.xmbtn.com/reveal?u=';
 $C['MERGE_API'] = 'http://ottapi.xmbtn.com/reveal';
 
+$C['DATA_API'] = 'http://ottapi.xmbtn.com/app/data/';
+
 foreach($C as $k => $v) {
 	if (!defined($k))
 		define($k, $v);

