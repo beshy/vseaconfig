@@ -1,7 +1,9 @@
 
 ;(function(){
-	if (window.sendOTTData)
+	if (window.sendOTTData) {
 		return;
+	}
+
 	window.OTT_JSON_DATA = '';
 	window.sendOTTData = {};
 	window.sendOTTData.send = function (s) {
@@ -118,6 +120,7 @@
 			data.valid = true;
 		} else {
 			data.valid = false;
+			data.cache = url+'false';
 		}
 		parseDone();
 	};
@@ -143,10 +146,15 @@
 		var s = JSON.stringify(data);
 		console.log('get page data: '+s);
 		if (window.sendOTTData) {
-			console.log('call sendOTTData.send');
-			window.sendOTTData.send(s);
+			if (window.sendOTTData.send) {
+				console.log('call sendOTTData.send');
+				window.sendOTTData.send(s);
+			} else {
+				var ss = JSON.stringify(window.sendOTTData);
+				console.log('sendOTTData missing method send.'+ss);
+			}
 		} else {
-			console.log('no sendOTTData method.');
+			console.log('no sendOTTData object.');
 		}
 
 	};
@@ -162,7 +170,13 @@
 		document.head.appendChild(e);
 		parseStart();
 		if (ito) {
-			setTimeout(parseDone, to);
+			// to cache
+			
+			setTimeout(function(){
+				//alert('expire: '+to+' '+url);
+				//data.cache = 'null';
+				parseDone();
+			}, to);
 		}
 	};
 
@@ -257,7 +271,7 @@
 
 	} else if ( null != (m=url.match(/tv.sohu.com/i)) && null != (m=body.match(/\s+vid\s*[\:\=]\s*\"(\d+)\"/i)) && null != (m2=body.match(/og\:url.*?content\=\"(.+?)\"/i)) ) {
 		// sohu
-		ext += '&iid='+m[1];
+		//ext += '&iid='+m[1];
 		setUrls(m2[1]);
 
 		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.*?)\"/i)) && null != (title=body.match(/keywords.*?content=\"(.*?)\"/i)) ) {
@@ -286,6 +300,67 @@
 		};
 		var checkChangeI=setInterval(checkChange, 50);
 		
+	} else if ( null != (m=url.match(/tv.sohu.com\/hots/i)) && null != (m=body.match(/v_content[^<>]*?>\s*(.*?)\s*</i)) ) {
+		//&& null != (m=body.match(/v_content[^<>]*?>\s*(.*?)\s*</i)) && window.VideoData
+
+		// sohu
+		// data.title = m[1];
+		// var v = window.VideoData;
+		// var sohu_url = "http://m.tv.sohu.com/v"+v.vid+".shtml";
+		// data.cache = sohu_url;
+
+		// ext += '&iid='+v.vid;
+		// setUrls(sohu_url);
+
+		parseStart();
+
+		var lastVid = false;
+		var checkChange = function () {
+			if (window.VideoData) {
+				var v = window.VideoData;
+				if (!lastVid) {
+					lastVid = v.vid;
+
+					var sohu_url = "http://m.tv.sohu.com/v"+v.vid+".shtml";
+					data.title = m[1];
+					data.cache = sohu_url;
+					ext += '&iid='+v.vid;
+					setUrls(sohu_url);
+
+					parseDone();
+
+					return;
+				}
+				if (v.vid != lastVid) {
+					console.log('get new location');
+					clearInterval(checkChangeI);
+					window.location.href = "http://m.tv.sohu.com/v"+v.vid+".shtml";
+				}
+			}
+		};
+		var checkChangeI=setInterval(checkChange, 50);
+
+		var _istouched = false;
+		var playo = document.getElementsByClassName('player_init');
+		for (var i = playo.length - 1; i >= 0; i--) {
+			var po = playo[i];
+			po.onclick = null;
+			po.ontouchstart=function(){
+				_istouched = true;
+			};
+			
+			po.ontouchend=function () {
+				if (_istouched) {
+					window.location.href="http://m.tv.sohu.com/v"+this.getAttribute('video-vid')+".shtml";
+				}
+				
+			};
+		}
+
+		window.ontouchmove = function () {
+			_istouched = false;
+		};
+
 	} else if ( null != (m=url.match(/.*tudou.com.*/i)) && window.itemData ) {
 		var _d = window.itemData;
 		if (_d.vcode && _d.vcode!='') {
@@ -307,14 +382,21 @@
 					lastVid = v.iid;
 					return;
 				}
-				if (v.iid != lastVid || window.location.href.indexOf(v.icode) == -1) {
+
+				if ( window.location.href.indexOf(v.icode) == -1 ) {
+					data.cache = false;
+				}
+
+				if (v.iid != lastVid ) {
 					console.log('tudou get new location');
 					clearInterval(checkChangeI);
 					if (v.acode && v.acode != '')
 						window.location.href='http://www.tudou.com/albumplay/'+v.acode+'/'+v.icode+'.html';
 					else
 						window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
+					
 				}
+
 			}
 		};
 		var checkChangeI=setInterval(checkChange, 50);
@@ -523,17 +605,23 @@
 		var yurl = 'http://v.yinyuetai.com/video/'+m[1];
 		setUrls(yurl);
 		
-		if ( null != (title=body.match(/<h1[^<>]*?title[^<>]*?>([\w\W]*?)<\/h1>/i)) && null != (img=body.match(/<img[^<>]*?src\=\"(.*?)\"[^<>]*?>/i)) ) {
+		// if ( null != (title=body.match(/<h1[^<>]*?title[^<>]*?>([\w\W]*?)<\/h1>/i)) && null != (img=body.match(/<img[^<>]*?src\=\"(.*?)\"[^<>]*?>/i)) ) {
+		// 	data.img = img[1];
+		// 	data.title = title[1];
+		// }
+
+		if ( null != (title=body.match(/<title[^<>]*?>\s*(.*)/i)) && null != (img=body.match(/<img[^<>]*?src\=\"(.*?)\"[^<>]*?>/i)) ) {
 			data.img = img[1];
 			data.title = title[1];
 		}
+
 	} else if ( null != (m=url.match(/.*?yinyuetai.com\/wap\/video\/(\d+).*/i)) || null != (m=body.match(/data-videoid\=\"(\d+)\"/i)) ) {
 		
 		var yurl = 'http://v.yinyuetai.com/video/'+m[1];
 		setUrls(yurl);
 		
 		
-		if ( null != (title=body.match(/<h1[^<>]*?title[^<>]*?>([\w\W]*?)<\/h1>/i)) && null != (img=body.match(/<img[^<>]*?src\=\"(.*?)\"[^<>]*?>/i)) ) {
+		if ( null != (title=body.match(/<title[^<>]*?>\s*(.*)/i)) && null != (img=body.match(/<img[^<>]*?src\=\"(.*?)\"[^<>]*?>/i)) ) {
 			data.img = img[1];
 			data.title = title[1];
 		}
