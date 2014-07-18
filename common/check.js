@@ -118,6 +118,7 @@
 	window.__checkSrcAvaliable = function (d) {
 		if (d && d.success && d.success == true) {
 			data.valid = true;
+			//data.cache = url+'false';
 		} else {
 			data.valid = false;
 			data.cache = url+'false';
@@ -137,7 +138,7 @@
 		}
 
 		returnPageDataDone = true;
-		if ( data && data.title && data.m_url ) {
+		if ( data && data.title && data.param ) { // data.m_url
 			data.title = escape(data.title);
 		} else {
 			data = null;
@@ -560,8 +561,13 @@
 	} else if ( null != (m=url.match(/.*?yinyuetai.com\/video\/.*/i)) ) {
 		setUrls(url);
 		
-		if ( null != (title=body.match(/title\"\s*content=\"(.*?)\"/i)) && null != (img=body.match(/image\"\s*content=\"(.*?)\"/i)) ) {
-			data.img = img[1];
+		// if ( null != (title=body.match(/title\"\s*content=\"(.*?)\"/i)) && null != (img=body.match(/image\"\s*content=\"(.*?)\"/i)) ) {
+		// 	data.img = img[1];
+		// 	data.title = title[1];
+		// }
+
+		if ( null != (title=body.match(/\<title\>(.*)/i)) ) {
+			data.img = '';
 			data.title = title[1];
 		}
 
