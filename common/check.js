@@ -3,7 +3,9 @@
 	if (window.sendOTTData) {
 		return;
 	}
+	return;
 
+	// iOS Only
 	window.OTT_JSON_DATA = '';
 	window.sendOTTData = {};
 	window.sendOTTData.send = function (s) {
@@ -16,6 +18,33 @@
 
 })();
 
+window.checkLocationChange = true;
+(function(){
+	var src = window.location.href;
+	var i = src.indexOf('#');
+	if (i !== -1) {
+		src = src.substring(0,i);
+	}
+
+	var checkLocation = function () {
+		if (!window.checkLocationChange){
+			clearInterval(checkLocationI);
+			return;
+		}
+		var _src = window.location.href;
+		i = _src.indexOf('#');
+		if (i !== -1) {
+			_src = _src.substring(0,i);
+		}
+
+		if (src != _src) {
+			clearInterval(checkLocationI);
+			window.location.reload();
+		}
+	};
+	var checkLocationI=setInterval(checkLocation, 50);
+})();
+
 (function(){
 	console.log('init check')
 	var url = (window.__src_url) ? window.__src_url : window.location.href;
@@ -25,46 +54,55 @@
 	var title;
 
 	var data = {
-		valid: true,
+		//valid: true,
 		title: document.getElementsByTagName('title') ? document.getElementsByTagName('title')[0].innerHTML : 'vod' ,
 		cache: url,
-		param: ''
+		url: false
 	};
 	// &seek=OTT
 	var ext = '';
 
-	var getParam = function(u) {
-		return '?u='+encodeURIComponent(u)+ext;
+	var filterData = function (d) {
+		var dd = {};
+		dd.assetid = '';
+		dd.seekto = 0;
+		dd.duration = 0;
+		dd.assetname = escape(d.title);;
+		dd.asseturl = PLAY_URL+encodeURIComponent(d.url)+ext;
+		return dd;
 	};
 
+
 	var getAdNum = function (adp) {
-		if ('' == data.param) {
+		if ('' == data.url) {
 			return ;
 		}
 		adp = adp || '';
-		data.param += '&adp='+adp
+		ext += '&adp='+adp
 	};
 
 	var setUrls = function (url) {
-		data.param = getParam(url);
-		checkSrcAvaliable();
+		data.url = url;
+		//data.param = getParam(url);
+		//checkSrcAvaliable();
+
 	};
 
-	var checkSrcAvaliable = function () {
-		var url = MERGE_API+data.param+'&mode=checkOrigSrcs&quality=2&rtype=json&callback=__checkSrcAvaliable';
-		insertScript(url, true);
-	};
+	// var checkSrcAvaliable = function () {
+	// 	var url = MERGE_API+data.param+'&mode=checkOrigSrcs&quality=2&rtype=json&callback=__checkSrcAvaliable';
+	// 	insertScript(url, true);
+	// };
 
-	window.__checkSrcAvaliable = function (d) {
-		if (d && d.success && d.success == true) {
-			data.valid = true;
-			//data.cache = url+'false';
-		} else {
-			data.valid = false;
-			data.cache = url+'false';
-		}
-		parseDone();
-	};
+	// window.__checkSrcAvaliable = function (d) {
+	// 	if (d && d.success && d.success == true) {
+	// 		data.valid = true;
+	// 		//data.cache = url+'false';
+	// 	} else {
+	// 		data.valid = false;
+	// 		data.cache = url+'false';
+	// 	}
+	// 	parseDone();
+	// };
 
 	var returnPageDataDone = false;
 	var returnPageData = function () {
@@ -76,14 +114,18 @@
 			return setTimeout(returnPageData, 300);
 		}
 
+		var d;
+
 		returnPageDataDone = true;
-		if ( data && data.title && data.param ) { // data.m_url
-			data.title = escape(data.title);
+		if ( data && data.title && data.url ) {
+			d = filterData(data)
 		} else {
-			data = null;
+			d = null;
 		}
 
-		var s = JSON.stringify(data);
+		var s = JSON.stringify(d);
+		window._OTT_DATA = d;
+
 		console.log('get page data: '+s);
 		if (window.sendOTTData) {
 			if (window.sendOTTData.send) {
@@ -396,6 +438,47 @@
 		};
 
 		var checkChangeI=setInterval(checkChange, 50);
+		
+
+
+		var popclose = function () {
+			var popflow = document.getElementById('popflowContent');
+			var hasClass = function(ele, cls) {
+		        return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+		    };
+		    var addClass = function(ele, cls) {
+		        if (!hasClass(ele, cls)) {
+		            ele.className += " " + cls;
+		        }
+		    };
+		    var removeClass = function(ele, cls) {
+		        if (hasClass(ele, cls)) {
+		            var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+		            ele.className = ele.className.replace(reg, ' ');
+		        }
+		    };
+		    var hiddenList = ['mod-app_banner', 'mod-header', 'mod-nav', 'bd', 'mod-footer', 'mod-sideBar'];
+		    var showPage = function() {
+		        for (var i = 0; i < hiddenList.length; i++) {
+		            var elem = document.getElementsByClassName(hiddenList[i])[0];
+		            if(elem){
+		                removeClass(elem, 'dn');
+		            }
+		        }
+		    };
+
+			if (popflow ) { //&& !hasClass(popflow, 'dn')
+				    
+				    addClass(popflow, 'dn');
+				    showPage();
+				    Q.PageInfo.skipedCover = true;
+				    Q.event.customEvent.fire({
+				        type: 'skipcover'
+				    });
+			}
+		};
+		var popclosei = setInterval(popclose, 2000);
+		popclose();
 
 
 	} else if ( null != (m=url.match(/.*m.(ku6.com.*)/i)) ) {
@@ -506,13 +589,3 @@
 
 
 
-(function(){
-	var src = window.location.href;
-	var checkLocation = function () {
-		if (src != window.location.href) {
-			clearInterval(checkLocationI);
-			window.location.reload();
-		}
-	};
-	var checkLocationI=setInterval(checkLocation, 50);
-})();

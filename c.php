@@ -7,4 +7,4 @@ foreach($p as &$v)
 }
 
 
-file_put_contents('config_xm_ott.json',json_encode($p));
+file_put_contents('config_sz.json',json_encode($p));
