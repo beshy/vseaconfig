@@ -17,12 +17,14 @@
 })();
 
 (function(){
-	console.log('init check')
+	
 	var url = (window.__src_url) ? window.__src_url : window.location.href;
 	var body = (window.__src_code) ? window.__src_code : document.documentElement.outerHTML;
 	var m = null, m2 = null, isTimeout = false;
 	var src = null;
 	var title;
+
+	console.log('init check, url: ', window.__src_url, window.location.href);
 
 	var data = {
 		valid: true,
