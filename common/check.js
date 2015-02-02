@@ -275,7 +275,7 @@
 		//ext += '&iid='+m[1];
 		setUrls(m2[1]);
 
-		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.*?)\"/i)) && null != (title=body.match(/keywords.*?content=\"(.*?)\"/i)) ) {
+		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.*?)\"/i)) && null != (title=body.match(/keywords.*?content=\"(.*?)[\"\,\;\|]/i)) ) {
 			data.img = img[1];
 			data.title = title[1];
 		}
@@ -442,7 +442,6 @@
 			//data.title = title[1];
 			data.title = window.info.title;
 		}
-
 		
 
 	} else if ( null != (m=url.match(/.*sina.cn.*/i)) && null != (m=body.match(/location\.php\?.*?url\=([^\&\#\'\"]+)/i)) ) {
