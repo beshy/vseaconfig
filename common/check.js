@@ -38,17 +38,20 @@
 		src=getRevealUrl("http://v.youku.com/v_show/id_"+vid+".html");
 
 
-		window.__check_getYoukuData = function (d) {
-			if (d && d.data && d.data[0]) {
-				data.img = d.data[0].logo;
-				data.title = d.data[0].title;
-			}
-			returnPageData();
-		};
+		// window.__check_getYoukuData = function (d) {
+		// 	if (d && d.data && d.data[0]) {
+		// 		data.img = d.data[0].logo;
+		// 		data.title = d.data[0].title;
+		// 	}
+		// 	returnPageData();
+		// };
 
-		var e=document.createElement('script'); 
-		e.setAttribute('src', 'http://v.youku.com/player/getPlaylist/VideoIDS/'+vid+'/Pf/4?__callback=__check_getYoukuData'); 
-		document.head.appendChild(e);
+		// var e=document.createElement('script'); 
+		// e.setAttribute('src', 'http://v.youku.com/player/getPlaylist/VideoIDS/'+vid+'/Pf/4?__callback=__check_getYoukuData'); 
+		// document.head.appendChild(e);
+
+		data.img = 'youku';
+		data.title = 'youku';
 
 
 
