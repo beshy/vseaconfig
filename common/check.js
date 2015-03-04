@@ -1,202 +1,252 @@
-(function(){
-	var url = window.location.href;
-	var body = document.documentElement.outerHTML;
-	var m = null;
-	var src = null;
+;
+;(function(){
 
-	var img, title;
-
-	var data = {
-		img: null,
-		title: null,
-		m_url: null
-	};
-	// &seek=OTT
-	var ext = '&playmode=play';
-
-
-	var getRevealUrl = function (u) {
-		return ["<?php echo PLAY_URL;?>"+encodeURIComponent(u)+ext, "<?php echo MERGE_URL;?>"+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
-	};
-
-	var getOTTUrl = function (u) {
-		return '<?php echo OTT_API;?>?'+stbid+'&playurl='+encodeURIComponent(u);
-	};
-
-	var returnPageData = function (force) {
-		if ( force || (data && data.img && data.m_url) ) {
-			var s = JSON.stringify(data);
-			document.cookie = "pagedata="+escape(s)+';';
-		}
-	};
-
-
-	// http://v.youku.com/v_show/id_XNTkyNjY1NjQ0.html?f=19532522&ev=1
-	if ( null != (m=url.match(/^http\:\/\/v\.youku\.com\/v_show\/id_([^\&\/\.]*).*$/i)) ) {
-		// youku
-		var vid=m[1];
-		src=getRevealUrl("http://v.youku.com/v_show/id_"+vid+".html");
-
-
-		// window.__check_getYoukuData = function (d) {
-		// 	if (d && d.data && d.data[0]) {
-		// 		data.img = d.data[0].logo;
-		// 		data.title = d.data[0].title;
-		// 	}
-		// 	returnPageData();
-		// };
-
-		// var e=document.createElement('script'); 
-		// e.setAttribute('src', 'http://v.youku.com/player/getPlaylist/VideoIDS/'+vid+'/Pf/4?__callback=__check_getYoukuData'); 
-		// document.head.appendChild(e);
-
-		data.img = 'youku';
-		data.title = 'youku';
-
-
-
-	} else if ( null != (m=url.match(/tv.sohu.com/i)) && null != (m=body.match(/\s+vid\s*[\:\=]\s*\"\d+\"/i)) ) {
-		// sohu
-		src=getRevealUrl(url);
-		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.*?)\"/i)) && null != (title=body.match(/keywords.*?content=\"(.*?)\"/i)) ) {
-			data.img = img[1];
-			data.title = title[1];
-		}
-	} else if ( null != (m=url.match(/.*tudou.com.*/i)) && ( 
-		null != (m=body.match(/(vcode)\s*[\:\=]\s*[\"\']([^\"\']+)[\"\']/i)) ||
-		null != (m=body.match(/(iid|defaultIid)\s*[\:\=]\s*(\d+)/i))
-		) ) {
-		ext += '&'+m[1]+'='+m[2];
-		src = getRevealUrl(url);
-		if ( null != (img=body.match(/\,\s*pic\s*\:\s*[\"\'](.*?)[\"\']/i)) && null != (title=body.match(/\,\s*kw\s*\:\s*[\"\'](.*?)[\"\']/i)) ) {
-			data.img = img[1];
-			data.title = title[1];
-		}
-
-		var fixClickTime = 1000;
-		var fixClick = function () {
-			var _a = document.getElementsByTagName('a');
-			for (var i = 0; i < _a.length; i++) {
-				(function (o) {
-					o.onclick = function () {
-						window.location.href=o.getAttribute('href');
-					};
-				})(_a[i]);
-			}
-			
-			setTimeout(arguments.callee, fixClickTime);
-		};
-		
-		fixClick();
-	} else if ( null != (m=url.match(/.*letv.com.*/i)) && (
-		null != (m=url.match(/m\.letv\.com\/vplay\_(.*?)\.html.*/i)) ||
-		null != (m=url.match(/www\.letv\.com\/ptv\/vplay\/(.*?)\.html.*/i))
-		) ) {
-		var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
-		src = getRevealUrl(leurl);
-		if ( null != (title=body.match(/title\s*:\s*[\"\'](.*?)[\"\']/i)) ) {
-			//data.img = img[1];
-			data.title = title[1];
-		}
-
-		var fixClickTime = 500;
-		var fixImg = function () {
-			var _a = document.getElementsByTagName('video');
-			if (_a.length) {
-				data.img = _a[0].getAttribute('poster');
-				returnPageData();
-				return;
-			};
-			setTimeout(arguments.callee, fixClickTime);
-		};
-		
-		fixImg();
-
-	} else if ( null != (m=url.match(/.*sina.cn.*/i)) && null != (m=body.match(/location\.php\?.*?url\=([^\&\'\"]+)/i)) ) {
-		var u = decodeURIComponent(m[1]);
-		src = getRevealUrl(u);
-		if ( null != (img=body.match(/poster=\"(.*?)\"/i)) && null != (title=body.match(/<h2>(.*?)<\/h2>/i)) ) {
-			data.img = img[1];
-			data.title = title[1];
-		}
-	} else if ( null != (m=url.match(/.*56.com.*/i)) && null != (m=body.match(/src\=\"http\:\/\/vxml.56.com\/html5\/(\d+)\//i)) ) {
-		ext += '&iid='+m[1];
-		src = getRevealUrl(url);
-		if ( null != (img=body.match(/url\((.*?)\)/i)) && null != (title=body.match(/keywords.*?content=\"(.*?)\"/i)) ) {
-			data.img = img[1];
-			data.title = title[1];
-		}
-	} else if ( null != (m=url.match(/.*m\.iqiyi\.com\/play.html.*?vid\=([^\&])/i)) ) {
-		
-		if (window.tvInfoJs) {
-			data.img = window.tvInfoJs.vpic;
-			data.title = window.tvInfoJs.vn;
-			src = getRevealUrl(window.tvInfoJs.vu);
-			var fixClickTime = 1000;
-			var fixClick = function () {
-				var _a = document.getElementsByTagName('a');
-				for (var i = 0; i < _a.length; i++) {
-					if (_a[i].getAttribute('data-delegate') == 'play') {
-						_a[i].setAttribute('data-delegate', 'go');
-					}
-				}
-				
-				setTimeout(arguments.callee, fixClickTime);
-			};
-			
-			fixClick();
-		} else {
-			src = getRevealUrl(url);
-			ext += '&iid='+m[1];
-		}
-	} else if ( null != (m=url.match(/.*m.(ku6.com.*)/i)) ) {
-		src = getRevealUrl('http://v.'+m[1]);
-		if ( null != (img=body.match(/vid,\s*\'(.*?)\'/i)) && null != (title=body.match(/<title>(.*?)<\/title>/i)) ) {
-			data.img = img[1];
-			data.title = title[1];
-		}
+	// Android defined sendOTTData Object
+	if (window.sendOTTData) {
+		return;
 	}
 
 
-	if ( null != src && '' != src ) {
-		var appendBtn = function () {
-			var btnCode = '';
-			var btnDiv = document.createElement("div");
-
-			btnCode +=   '<span style="display:block; position:absolute; top:0; left:50%; margin-left:-60px; border:2px solid #666;  background:#fff; z-index:999999;opacity: 0.9;filter:alpha(opacity=9);">'
-					+ '<a href="'+src[0]+'&quality=0" target="_blank" style="color:#000;display:block;line-height:200%;">HLS PLAY NORMAL</a>';
-			data.m_url = src[0]+'&quality=0';
-
-			if (window.stbid) {
-				var mu = [getOTTUrl(src[1]+'&quality=0', window.stbid), getOTTUrl(src[1]+'&quality=1', window.stbid), getOTTUrl(src[1]+'&quality=2', window.stbid)];
-
-				data.ottsd_url= mu[1];
-				data.otthd_url= mu[2];
-				//data.ottsp_url= mu[2];
-
-				btnCode += '<a href="'+mu[1]+'" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY NORMAL</a>'
-					+ '<a href="'+mu[2]+'&quality=1" target="_blank" style="color:#000;display:block;line-height:200%;">OTT PLAY HIGH</a>';
-
-			} else {
-				btnCode += '<a href="api://getStbid:'+url+'" target="_blank" style="color:#000;display:block;line-height:200%;">Scan OTT code</a>';
-			}
-
-			btnCode += '</span>';
-			btnDiv.innerHTML = btnCode;
-			document.body.appendChild(btnDiv);
-			returnPageData();
-		};
-
-		if (!window.stbid) {
-			setTimeout(appendBtn, 1000);
-		} else {
-			appendBtn();
+	// iOS only
+	window.OTT_JSON_DATA = '';
+	window.sendOTTData = {
+		isios: true,
+		send: function (s) {
+			window.OTT_JSON_DATA = s;
+			var f = document.createElement('iframe');
+			f.style.display = 'none';
+			document.documentElement.appendChild(f);
+			f.src = "cmd://SEND_OTT_DATA";
 		}
-	} else {
-		data = null;
-		returnPageData(true);
-	}
+	};
 
-
-	returnPageData();
 })();
+
+
+
+window._vseatab = (function(){
+
+	var tab = {
+		add: function (p) {
+			//var p = ['HLS','OTT-TV'];
+			var pstr = '';
+			for(var i=0; i<p.length; i++) {
+				pstr += '<div><a id="vseatab'+i+'" href="">'+p[i]+'</a></div>';
+			}
+			var str = '<div id="vseatabbg" class="vseatabbg" onClick="_vseatab.close();"></div><div id="vseatab" class="vseatab">'+pstr+'<div><a href="javascript:void();" onClick="_vseatab.close();">关闭</a></div></div>';
+				str = str+'<style type="text/css">';
+				str = str+'.vseatabbg{display:none; width:100%; height:100%; background:#000; position:fixed; left:0; top:0px; z-index:999;filter:Alpha(Opacity=30);opacity:0.3; }';
+				str = str+'.vseatab{width:100%; height:230px; display:none;position:fixed; left:0; bottom:0px; z-index:9999;}';
+				str = str+'.vseatab div{ width:60%; margin:0 auto; text-align:center; margin-top:10px; line-height:40px;}';
+				str = str+'.vseatab div a{background: none repeat scroll 0 0 #EEEEEE;background: none repeat scroll 0 0 #EEEEEE; border: 1px solid #DDDDDD; border-radius: 3px;box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset; color: #AAAAAA;display: block;font-weight: 700;margin:0 4px;overflow: hidden;text-overflow: ellipsis;text-shadow: 0 1px 0 #FFFFFF;white-space: nowrap;text-align:center;}';
+				str = str+'.vseatab div a:hover{background: none repeat scroll 0 0 #C21408;border: 1px solid #9E1007;color:#FFF;}';
+				str = str+'</style>';
+
+			var btnDiv = document.createElement("div");
+			btnDiv.innerHTML = str;
+			document.body.appendChild(btnDiv);
+		},
+
+		update: function (urls) {
+			for(var i=0; i<urls.length; i++) {
+				var a = document.getElementById('vseatab'+i);
+				if (a) {
+					a.setAttribute('href', urls[i]);
+				}
+			}
+		},
+
+		show: function(){
+			var a = document.getElementById('vseatab');
+			if (a) {
+				a.style.display="block";
+			}
+
+			a = document.getElementById('vseatabbg');
+			if (a) {
+				a.style.display="block";
+			}
+		},
+
+		close: function () {
+			var a = document.getElementById('vseatab');
+			if (a) {
+				a.style.display="none";
+			}
+
+			a = document.getElementById('vseatabbg');
+			if (a) {
+				a.style.display="none";
+			}
+		}
+	};
+
+
+
+
+	return tab;
+})();
+
+
+
+
+window._checkPageData = (function(){
+
+
+
+
+	var checkPageData = function(){
+		var _ = this;
+		_.url = (window.__src_url) ? window.__src_url : window.location.href;
+		_.body = (window.__src_code) ? window.__src_code : document.documentElement.outerHTML;
+		_.data = {
+			u: false,
+			ext: ''
+		};
+	};
+
+
+	checkPageData.prototype = {
+		url: null,
+		body: null,
+		data: null,
+
+		parseCompleted: 0,
+		returnDone: false,
+
+
+		parseMethods: [
+
+			// youku
+			function () {
+				var m = null, _ = this;
+				if ( null === (m=_.url.match(/^http\:\/\/v\.youku\.com\/v_show\/id_([^\&\/\.]*).*$/i)) ) {
+					return false;
+				}
+				var vid=m[1];
+				_.data.u = "http://v.youku.com/v_show/id_"+vid+".html";
+
+				return true;
+			},
+
+			// ---------------
+
+
+
+			// default
+			function () {
+
+			}
+		],
+
+
+		returnData: function(fn, ctx) {
+			var _ = this;
+
+			if (_.returnDone) {
+				return;
+			}
+
+
+			if ( _.parseCompleted>0 ) {
+				setTimeout(function(){
+					_.returnData(fn, ctx);
+				}, 300);
+			}
+
+			_.returnDone = true;
+			fn.call(ctx, _.data);
+		},
+
+		getData: function (fn, ctx) {
+			var _ = this;
+
+			for (var i = 0; i < _.parseMethods.length; i++) {
+				var parseFn = _.parseMethods[i];
+				if ( parseFn.call(_) === true ) {
+					break;
+				}
+			};
+
+			_.returnData(fn, ctx);
+		}
+	};
+
+
+	return checkPageData;
+
+})();
+
+
+(function(){
+	var o = new _checkPageData();
+
+	var filterData = function (data) {
+		if ( !data.u ) {
+			return;
+		}
+		//data.hls_url = "<?php echo HLS_URL;?>" + encodeURIComponent(data.u) + data.ext;
+		data.hls_url = <?php echo HLS_URL;?>;
+		//data.ott_url = data.u;
+		data.ott_url = <?php echo OTT_URL;?>;
+
+	};
+
+	var sendData = function (data) {
+		if ( !data.u ) {
+			data = null;
+		}
+		var s = JSON.stringify(data);
+		console.log('get page data: '+s);
+		if (window.sendOTTData) {
+			if (window.sendOTTData.send) {
+				console.log('call sendOTTData.send');
+				window.sendOTTData.send(s);
+			} else {
+				var ss = JSON.stringify(window.sendOTTData);
+				console.log('sendOTTData missing method send.'+ss);
+			}
+		} else {
+			console.log('no sendOTTData object.');
+		}
+	};
+
+
+
+
+
+	var showtab = function (data) {
+		if ( !data.hls_url || false === window.showtab ) {
+			return;
+		}
+		var appendBtn = function () {
+			var tab = window._vseatab
+			tab.add(['HLS','OTT-TV']);
+			tab.update([data.hls_url, data.ott_url]);
+			tab.show();
+		};
+
+		// if (!window.stbid) {
+		// 	setTimeout(appendBtn, 1000);
+		// } else {
+			appendBtn();
+		//}
+	};
+
+
+	o.getData(function(data){
+		//
+		window._VSEA_DATA_=data;
+
+		filterData(data);
+		sendData(data);
+		showtab(data);
+
+	});
+
+
+})();
+
+
+
+
