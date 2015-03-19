@@ -3,7 +3,7 @@
 	if (window.sendOTTData) {
 		return;
 	}
-
+	
 	window.OTT_JSON_DATA = '';
 	window.sendOTTData = {};
 	window.sendOTTData.send = function (s) {
@@ -13,20 +13,25 @@
 		document.documentElement.appendChild(f);
 		f.src = "cmd://SEND_OTT_DATA";
 	};
-
 })();
 
+window.__LOG__ = '';
+window.___log = function (s) {
+	//window.__LOG__.push(arguments);
+	window.__LOG__ += s+"\n";
+	window.__console_log.apply(console, arguments);
+};
+window.__console_log = console.log;
+console.log = window.___log;
+
 (function(){
-	console.log('init check')
+	console.log('init check');
 	var url = (window.__src_url) ? window.__src_url : window.location.href;
 	var body = (window.__src_code) ? window.__src_code : document.documentElement.outerHTML;
 	var m = null, m2 = null, isTimeout = false;
 	var src = null;
-
 	var isShowAds = true;
-
 	var img, title;
-
 	var data = {
 		valid: true,
 		img: null,
@@ -39,23 +44,21 @@
 	};
 	// &seek=OTT
 	var ext = '';
-
-
+	
 	var getRevealUrl = function (u) {
 		return [PLAY_URL+encodeURIComponent(u)+ext, MERGE_URL+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
 	};
-
-
+	
 	var getParam = function(u) {
 		return '?u='+encodeURIComponent(u)+ext;
 	};
-
+	
 	var saveCookie = function (u) {
-		var e=document.createElement('script'); 
-		e.setAttribute('src', DATA_API+'setCookie.php?k='+encodeURIComponent(u)+'&v='+encodeURIComponent(document.cookie) ); 
+		var e=document.createElement('script');
+		e.setAttribute('src', DATA_API+'setCookie.php?k='+encodeURIComponent(u)+'&v='+encodeURIComponent(document.cookie));
 		document.head.appendChild(e);
 	};
-
+	
 	window.__getAdNum = function (d) {
 		if ( !isShowAds )
 			return;
@@ -70,19 +73,20 @@
 					data.adtimes[i] = '-1';
 				}
 			}
-
+			
 			data.adtimes = data.adtimes.join(',');
 			
 		}
 		parseDone();
 	};
-
+	
+	
 	var hideAds = function () {
 		isShowAds = false;
 		data.adnum = 0;
 		data.adtimes = '-1';
 	}
-
+	
 	var getAdNum = function (adp) {
 		if ( !isShowAds )
 			return;
@@ -91,30 +95,31 @@
 			return ;
 		}
 		console.log('getAdNum');
+		
 		adp = adp || '';
-		data.param += '&adp='+adp
+		data.param += '&adp='+adp;
 		var url = MERGE_API+data.param+'&mode=getOrigSrcs&ptype=ad&rtype=json&callback=__getAdNum';
 		insertScript(url, true);
 	};
-
+	
 	var setUrls = function (url) {
 		src = getRevealUrl(url);
 		data.param = getParam(url);
-
+		
 		data.m_url = src[0]+'&quality=0';
-
+		
 		var mu = [src[1]+'&quality=0', src[1]+'&quality=1', src[1]+'&quality=2'];
 		data.ottsd_url= mu[1];
 		data.otthd_url= mu[2];
-
+		
 		checkSrcAvaliable();
 	};
-
+	
 	var checkSrcAvaliable = function () {
 		var url = MERGE_API+data.param+'&mode=checkOrigSrcs&quality=2&rtype=json&callback=__checkSrcAvaliable';
 		insertScript(url, true);
 	};
-
+	
 	window.__checkSrcAvaliable = function (d) {
 		if (d && d.success && d.success == true) {
 			data.valid = true;
@@ -125,25 +130,25 @@
 		}
 		parseDone();
 	};
-
-
+	
+	
 	var returnPageDataDone = false;
 	var returnPageData = function () {
 		if (returnPageDataDone) {
 			return;
 		}
-
+		
 		if ( parseComplete>0 ) {
 			return setTimeout(returnPageData, 300);
 		}
-
+		
 		returnPageDataDone = true;
 		if ( data && data.title && data.param ) { // data.m_url
 			data.title = escape(data.title);
 		} else {
 			data = null;
 		}
-
+		
 		var s = JSON.stringify(data);
 		console.log('get page data: '+s);
 		if (window.sendOTTData) {
@@ -180,13 +185,13 @@
 			}, to);
 		}
 	};
-
+	
 	var JSONparse = function (s) {
 		var d;
 		try {
 			d=JSON.parse(s);
 		} catch(e) {
-
+			
 		}
 		return d;
 	};
@@ -195,42 +200,74 @@
 	    return Math.floor(Math.random() * (end - start) + start);
 	}
 
-
-
-
 	var parseComplete = 0;
 	var parseStart = function () {
 		parseComplete++;
-		console.log('parseStart');
+		console.log('parseStart: '+parseComplete);
 	};
+	
 	var parseDone = function () {
+		console.log('parseDone: '+parseComplete);
 		parseComplete--;
-		console.log('parseDone');
 		returnPageData();
 	};
-
-
+	/*new more*/
+	var getCookie = function (c_name) {
+	   if (document.cookie.length > 0) {
+		   c_start = document.cookie.indexOf(c_name + "=");//这里因为传进来的的参数就是带引号的字符串，所以c_name可以不用加引号
+		   if (c_start != -1) {
+			   c_start = c_start + c_name.length + 1;
+			   c_end = document.cookie.indexOf(";", c_start);//当indexOf()带2个参数时，第二个代表其实位置，参数是数字，这个数字可以加引号也可以不加（最好还是别加吧）
+			   if (c_end == -1) c_end = document.cookie.length;
+			   	return unescape(document.cookie.substring(c_start, c_end));
+			   }
+		   }
+		return false;
+	}
+	
+	/*operate css class*/
+	function hasClass(obj, cls) {
+		if(obj.className) {
+			return obj.className.match(new RegExp('(\\b|^)' + cls + '(\\b|$)'));  
+		}else {
+			return false;
+		}
+	}
+	
+	function addClass(obj, cls) {  
+		if (!hasClass(obj, cls)) {
+			obj.className = (obj.className.trim()+" "+cls).trim();	
+		}  
+	}
+	
+	function removeClass(obj, cls) {  
+		if (hasClass(obj, cls)) { 
+			var reg = new RegExp('(\\b|^)' + cls + '(\\b|$)'); 
+			obj.className = obj.className.replace(reg, ' ');  
+		}  
+	}
+	
 	// http://v.youku.com/v_show/id_XNTkyNjY1NjQ0.html?f=19532522&ev=1
 	if ( null != (m=url.match(/^http\:\/\/v\.youku\.com\/v_show\/id_([^\&\#\/\.]*).*$/i)) ) {
 		// youku
 		var vid=m[1];
-
+		
 		var youkuUrl = "http://v.youku.com/v_show/id_"+vid+".html"
 		setUrls(youkuUrl);
-
+		
 		var __youku_complete = 0;
 		window.__check_getYoukuData = function (d) {
 			// if (d && d.payInfo && d.payInfo.oriprice) {
 			// 	console.log('vip, pass');
 			// 	return;
 			// }
-
+			
 			if (d) {
 				// VIP no ads
 				if (d.user && d.user.vip) {
 					hideAds();
 				}
-
+				
 				// check is allow play
 				if (d.payInfo && d.payInfo.oriprice) {
 					if ( d.payInfo.play ) {
@@ -249,19 +286,19 @@
 					data.title = d.data[0].title;
 				}
 			}
-
+			
 			parseDone();
 		};
-
+		
 		insertScript('http://v.youku.com/player/getPlaylist/VideoIDS/'+vid+'/Pf/4?__callback=__check_getYoukuData');
-
+		
 		if (window.videoId) {
 			var showId = window.showId ? window.showId : '0';
 			var videoId = window.videoId ? window.videoId : '0';
 			var videoOwnerID = window.videoOwnerID ? window.videoOwnerID : '';
 			getAdNum(showId+'_'+videoId+'_'+videoOwnerID);
 		}
-
+		
 		setInterval(function(){
 			if (jQuery) {
 				jQuery('#wintipsAppLimit').hide();
@@ -271,19 +308,20 @@
 
 
 	} else if ( null != (m=url.match(/tv.sohu.com/i)) && null != (m=body.match(/\s+vid\s*[\:\=]\s*\"(\d+)\"/i)) && null != (m2=body.match(/og\:url.*?content\=\"(.+?)\"/i)) ) {
+		
 		// sohu
 		//ext += '&iid='+m[1];
 		setUrls(m2[1]);
-
+		
 		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.*?)\"/i)) && null != (title=body.match(/keywords.*?content=\"(.*?)[\"\,\;\|]/i)) ) {
 			data.img = img[1];
 			data.title = title[1];
 		}
-
+		
 		if (window.VideoData && window.VideoData.vid && window.VideoData.tvid && window.VideoData.sid) {			
 			getAdNum(VideoData.sid+'_'+VideoData.vid+'_'+VideoData.tvid+'_'+VideoData.duration);
 		}
-
+		
 		var lastVid = false;
 		var checkChange = function () {
 			if (window.VideoData) {
@@ -383,11 +421,11 @@
 					lastVid = v.iid;
 					return;
 				}
-
+				
 				if ( window.location.href.indexOf(v.icode) == -1 ) {
 					data.cache = false;
 				}
-
+				
 				if (v.iid != lastVid ) {
 					console.log('tudou get new location');
 					clearInterval(checkChangeI);
@@ -422,27 +460,28 @@
 				parseDone();
 			}, 500);
 		}
-		
 
 	} else if ( null != (m=url.match(/.*letv.com.*/i)) && (
 		null != (m=url.match(/m\.letv\.com\/vplay\_(.*?)\.html.*/i)) ||
 		null != (m=url.match(/www\.letv\.com\/ptv\/vplay\/(.*?)\.html.*/i))
 		) ) {
-		var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
-		setUrls(leurl);
-		
-
-		getAdNum(m[1]);
-
-		console.log('check letv');
-
-		//if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.+?)[\"\']/i)) ) {
-		if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && window.info ) {
-			data.img = img[1];
-			//data.title = title[1];
-			data.title = window.info.title;
-		}
-		
+			
+			var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
+			
+			setUrls(leurl);
+			
+	
+			getAdNum(m[1]);
+	
+			console.log('check letv');
+	
+			//if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.+?)[\"\']/i)) ) {
+			if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && window.info ) {
+				data.img = img[1];
+				//data.title = title[1];
+				data.title = window.info.title;
+			}
+		//remove add
 
 	} else if ( null != (m=url.match(/.*sina.cn.*/i)) && null != (m=body.match(/location\.php\?.*?url\=([^\&\#\'\"]+)/i)) ) {
 		var u = decodeURIComponent(m[1]);
@@ -461,19 +500,53 @@
 	//} else if ( null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
 	} else if ( null != (m=url.match(/.*\.iqiyi\.com/i)) || null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
 		//ext += '&iid='+m[1]+'_'+m[2];
-		setUrls(url);
-
+		//setUrls(url);
+		
 		var lastVid = '';
-
+		
 		if (window.Q.PageInfo && Q.PageInfo.playInfo && Q.PageInfo.playInfo.vn) {
 			data.img = Q.PageInfo.playInfo.vpic;
 			data.title = Q.PageInfo.playInfo.vn;
 			lastVid = Q.PageInfo.playInfo.vid;
-			getAdNum();
-		} else {
+			
+			if(Q.PageInfo.playInfo.vip){
+				window.__check_getIqiyiData = function (d) {
+					
+					if(d.data.qiyi_vip_info){
+							//alert("You are VIP for iqiyi");
+							console.log("You are VIP for iqiyi");
+							hideAds();
+							ext += '&uc=1';
+							setUrls(url);
+							saveCookie(url);
+					}else{
+						//alert("You don't have permission to view");
+						console.log("You don't have permission to view");
+						return;
+					}
+					
+					parseDone();
+				};
+				
+				var authcookie = getCookie("P00001");				
+				if(authcookie){
+					parseStart();
+					insertScript('http://passport.iqiyi.com/apis/user/info.action?authcookie='+authcookie+'&callback=__check_getIqiyiData');
+				}else{
+					//alert("vip movie. not logged in");
+					console.log("vip movie. not logged in");
+					return;
+				}
+			}else{
+				setUrls(url);
+				getAdNum();
+			}
+			
+		} else { //not data seed
 			parseStart();
 		}
-
+		
+		// check current play page change
 		var checkChange = function () {
 			if (window.tvInfoJs) {
 				var info = window.tvInfoJs;
@@ -487,7 +560,7 @@
 					parseDone();
 					return;
 				}
-
+				
 				if (info.vid != lastVid) {
 					console.log('iqiyi get new location')
 					clearInterval(checkChangeI);
@@ -496,9 +569,8 @@
 				}
 			}
 		};
-
+		
 		var checkChangeI=setInterval(checkChange, 50);
-
 
 	} else if ( null != (m=url.match(/.*m.(ku6.com.*)/i)) ) {
 		setUrls('http://v.'+m[1]);
@@ -636,7 +708,7 @@
 	if  (window.hidePlayButton && window.SHOW_TAB=='no') {
 		window.hidePlayButton();
 	}
-
+	
 	returnPageData();
 
 })();

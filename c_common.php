@@ -13,7 +13,7 @@ $p=array(
 	),
 
 	array(
-		'url' => '^([^\/]*?\:\/\/)(m\.iqiyi\.com\/*|m\.pps\.tv\/*|m.letv.com\/*)$',
+		'url' => '^([^\/]*?\:\/\/)(m\.iqiyi\.com\/*|m\.pps\.tv\/*|m.letv.com\/*|www.youku.com\/?)$',
 		'tpl' => 'common/hack',
 		'type' => '1',
 	),
