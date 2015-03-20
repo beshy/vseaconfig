@@ -214,10 +214,10 @@ console.log = window.___log;
 	/*new more*/
 	var getCookie = function (c_name) {
 	   if (document.cookie.length > 0) {
-		   c_start = document.cookie.indexOf(c_name + "=");//这里因为传进来的的参数就是带引号的字符串，所以c_name可以不用加引�?
+		   c_start = document.cookie.indexOf(c_name + "=");
 		   if (c_start != -1) {
 			   c_start = c_start + c_name.length + 1;
-			   c_end = document.cookie.indexOf(";", c_start);//当indexOf()�?个参数时，第二个代表其实位置，参数是数字，这个数字可以加引号也可以不加（最好还是别加吧�?
+			   c_end = document.cookie.indexOf(";", c_start);
 			   if (c_end == -1) c_end = document.cookie.length;
 			   	return unescape(document.cookie.substring(c_start, c_end));
 			   }
@@ -500,53 +500,19 @@ console.log = window.___log;
 	//} else if ( null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
 	} else if ( null != (m=url.match(/.*\.iqiyi\.com/i)) || null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
 		//ext += '&iid='+m[1]+'_'+m[2];
-		//setUrls(url);
-		
+		setUrls(url);
+
 		var lastVid = '';
-		
+
 		if (window.Q.PageInfo && Q.PageInfo.playInfo && Q.PageInfo.playInfo.vn) {
 			data.img = Q.PageInfo.playInfo.vpic;
 			data.title = Q.PageInfo.playInfo.vn;
 			lastVid = Q.PageInfo.playInfo.vid;
-			
-			if(Q.PageInfo.playInfo.vip){
-				window.__check_getIqiyiData = function (d) {
-					
-					if(d.data.qiyi_vip_info){
-							//alert("You are VIP for iqiyi");
-							console.log("You are VIP for iqiyi");
-							hideAds();
-							ext += '&uc=1';
-							setUrls(url);
-							saveCookie(url);
-					}else{
-						//alert("You don't have permission to view");
-						console.log("You don't have permission to view");
-						return;
-					}
-					
-					parseDone();
-				};
-				
-				var authcookie = getCookie("P00001");				
-				if(authcookie){
-					parseStart();
-					insertScript('http://passport.iqiyi.com/apis/user/info.action?authcookie='+authcookie+'&callback=__check_getIqiyiData');
-				}else{
-					//alert("vip movie. not logged in");
-					console.log("vip movie. not logged in");
-					return;
-				}
-			}else{
-				setUrls(url);
-				getAdNum();
-			}
-			
-		} else { //not data seed
+			getAdNum();
+		} else {
 			parseStart();
 		}
-		
-		// check current play page change
+
 		var checkChange = function () {
 			if (window.tvInfoJs) {
 				var info = window.tvInfoJs;
@@ -560,7 +526,7 @@ console.log = window.___log;
 					parseDone();
 					return;
 				}
-				
+
 				if (info.vid != lastVid) {
 					console.log('iqiyi get new location')
 					clearInterval(checkChangeI);
@@ -569,8 +535,89 @@ console.log = window.___log;
 				}
 			}
 		};
-		
+
 		var checkChangeI=setInterval(checkChange, 50);
+
+
+
+
+
+
+
+
+
+
+
+
+		// var lastVid = '';
+		
+		// if (window.Q.PageInfo && Q.PageInfo.playInfo && Q.PageInfo.playInfo.vn) {
+		// 	data.img = Q.PageInfo.playInfo.vpic;
+		// 	data.title = Q.PageInfo.playInfo.vn;
+		// 	lastVid = Q.PageInfo.playInfo.vid;
+			
+		// 	if(Q.PageInfo.playInfo.vip){
+		// 		window.__check_getIqiyiData = function (d) {
+					
+		// 			if(d.data.qiyi_vip_info){
+		// 					//alert("You are VIP for iqiyi");
+		// 					console.log("You are VIP for iqiyi");
+		// 					hideAds();
+		// 					ext += '&uc=1';
+		// 					setUrls(url);
+		// 					saveCookie(url);
+		// 			}else{
+		// 				//alert("You don't have permission to view");
+		// 				console.log("You don't have permission to view");
+		// 				return;
+		// 			}
+					
+		// 			parseDone();
+		// 		};
+				
+		// 		var authcookie = getCookie("P00001");				
+		// 		if(authcookie){
+		// 			parseStart();
+		// 			insertScript('http://passport.iqiyi.com/apis/user/info.action?authcookie='+authcookie+'&callback=__check_getIqiyiData');
+		// 		}else{
+		// 			//alert("vip movie. not logged in");
+		// 			console.log("vip movie. not logged in");
+		// 			return;
+		// 		}
+		// 	}else{
+		// 		setUrls(url);
+		// 		getAdNum();
+		// 	}
+			
+		// } else { //not data seed
+		// 	parseStart();
+		// }
+		
+		// // check current play page change
+		// var checkChange = function () {
+		// 	if (window.tvInfoJs) {
+		// 		var info = window.tvInfoJs;
+				
+		// 		if (!lastVid) {
+		// 			lastVid = info.vid;
+		// 			data.img = info.vpic;
+		// 			data.title = info.vn;
+		// 			setUrls(info.vu);
+		// 			getAdNum();
+		// 			parseDone();
+		// 			return;
+		// 		}
+				
+		// 		if (info.vid != lastVid) {
+		// 			console.log('iqiyi get new location')
+		// 			clearInterval(checkChangeI);
+		// 			//window.location.href='http://m.iqiyi.com/play.html?tvid='+v.tvid+'&vid='+v.vid;
+		// 			window.location.href = info.vu;
+		// 		}
+		// 	}
+		// };
+		
+		// var checkChangeI=setInterval(checkChange, 50);
 
 	} else if ( null != (m=url.match(/.*m.(ku6.com.*)/i)) ) {
 		setUrls('http://v.'+m[1]);
