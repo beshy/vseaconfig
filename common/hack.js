@@ -24,11 +24,17 @@
 		
 		fn = function () {
 			if (window.$) {
+
+				// remove app only elemts
+				$("dl[k-name]").remove();
+
+				// remove popup
 				var a=$("a[data-action='webWatch']");
 				if (a && a.length && a[0].click) {
 					a[0].click();
 					return false;
 				}
+
 			}
 			
 			return true;
