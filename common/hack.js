@@ -1,5 +1,4 @@
-//789
-
+//gggggg
 (function(){
 
 	var url = (window.__src_url) ? window.__src_url : window.location.href;
