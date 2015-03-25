@@ -15,14 +15,14 @@
 	};
 })();
 
-window.__LOG__ = '';
+/*window.__LOG__ = '';
 window.___log = function (s) {
 	//window.__LOG__.push(arguments);
 	window.__LOG__ += s+"\n";
 	window.__console_log.apply(console, arguments);
 };
 window.__console_log = console.log;
-console.log = window.___log;
+console.log = window.___log;*/
 
 (function(){
 	console.log('init check');
@@ -90,7 +90,7 @@ console.log = window.___log;
 	var getAdNum = function (adp) {
 		if ( !isShowAds )
 			return;
-
+		
 		if ('' == data.param) {
 			return ;
 		}
@@ -252,7 +252,7 @@ console.log = window.___log;
 		// youku
 		var vid=m[1];
 		
-		var youkuUrl = "http://v.youku.com/v_show/id_"+vid+".html"
+		var youkuUrl = "http://v.youku.com/v_show/id_"+vid+".html";
 		setUrls(youkuUrl);
 		
 		var __youku_complete = 0;
@@ -402,19 +402,62 @@ console.log = window.___log;
 
 	} else if ( null != (m=url.match(/.*tudou.com.*/i)) && window.itemData ) {
 		var _d = window.itemData;
+		
 		if (_d.vcode && _d.vcode!='') {
 			ext += '&vcode='+_d.vcode;
 		} else {
 			//ext += '&iid='+_d.iid;
 		}
-		setUrls(url);
-
 		data.img = _d.pic;
 		data.title = _d.kw;
-
+		
+		if(window.aid){	
+			console.log(window.aid);
+			parseStart();
+			var xmlhttp;
+			if (window.XMLHttpRequest)
+			  {// code for IE7+, Firefox, Chrome, Opera, Safari
+			  xmlhttp=new XMLHttpRequest();
+			  }
+			else
+			  {// code for IE6, IE5
+			  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+			xmlhttp.onreadystatechange=function()
+			  {
+			  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				{
+				var ww_data = eval("["+xmlhttp.responseText+"]")[0];
+				//console.log(ww_data);
+				if(ww_data.code == -2){
+					setUrls(url);
+					console.log("not vip mv");
+				}else if(ww_data.code == 1){
+					if(ww_data.isVip){
+						if(ww_data.abVipPrice == "0.00"){
+							console.log("vip mv.have power");
+							setUrls(url);
+						}else{
+							console.log("vip mv.have not power");	
+						}		
+					}else{
+						console.log("code 1.no isVip");
+					}
+				}else{
+					console.log("unknown code");	
+				}
+				parseDone();
+				}
+			  }
+			  
+			xmlhttp.open("GET","http://www.tudou.com/feeportal/getPayMsg.html?aid="+window.aid,true);
+			xmlhttp.send();
+		}
+		
+		
 		var lastVid = false;
 		var checkChange = function () {
-
+			
 			if (window.itemData) {
 				var v = window.itemData;
 				if (!lastVid) {
@@ -435,11 +478,10 @@ console.log = window.___log;
 						window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
 					
 				}
-
 			}
 		};
 		var checkChangeI=setInterval(checkChange, 50);
-
+		
 		var checkTudouAd = function () {
 			if (window.itemData && window.itemData.iid) {
 				var showId = window.aid ? window.aid : '0';
@@ -452,7 +494,7 @@ console.log = window.___log;
 			}
 
 		};
-
+		
 		if ( !checkTudouAd() ) {
 			parseStart();
 			setTimeout(function () {
@@ -466,21 +508,38 @@ console.log = window.___log;
 		null != (m=url.match(/www\.letv\.com\/ptv\/vplay\/(.*?)\.html.*/i))
 		) ) {
 			
+			console.log(window.info.trylook);
 			var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
+			data.img = window.info.poster;
+			data.title = window.info.title;
 			
+			if(window.info.trylook == 0){
 			setUrls(leurl);
-			
-	
-			getAdNum(m[1]);
-	
+			getAdNum(m[1]);			
 			console.log('check letv');
-	
+			
+			}else{
+				
+				window.__check_getLetvData = function (d) {
+					if(d.isvip == 1){
+						console.log('check letv. vip video. have power');
+						ext += '&uc=1';
+						setUrls(leurl);
+						saveCookie(leurl);
+					}else{
+						console.log('check letv. vip video. no power');
+					}
+					parseDone();
+				}
+				parseStart();
+				insertScript('http://yuanxian.letv.com/letv/net/checkLogin.jsp?callback=__check_getLetvData&location='+url);
+			}
 			//if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.+?)[\"\']/i)) ) {
-			if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && window.info ) {
+			/*if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && window.info ) {
 				data.img = img[1];
 				//data.title = title[1];
 				data.title = window.info.title;
-			}
+			}*/
 		//remove add
 
 	} else if ( null != (m=url.match(/.*sina.cn.*/i)) && null != (m=body.match(/location\.php\?.*?url\=([^\&\#\'\"]+)/i)) ) {
@@ -528,7 +587,7 @@ console.log = window.___log;
 					parseDone();
 				};
 				
-				var authcookie = getCookie("P00001");				
+				var authcookie = getCookie("P00001");
 				if(authcookie){
 					parseStart();
 					insertScript('http://passport.iqiyi.com/apis/user/info.action?authcookie='+authcookie+'&callback=__check_getIqiyiData');
@@ -562,7 +621,7 @@ console.log = window.___log;
 				}
 				
 				if (info.vid != lastVid) {
-					console.log('iqiyi get new location')
+					console.log('iqiyi get new location');
 					clearInterval(checkChangeI);
 					//window.location.href='http://m.iqiyi.com/play.html?tvid='+v.tvid+'&vid='+v.vid;
 					window.location.href = info.vu;
@@ -723,5 +782,6 @@ console.log = window.___log;
 			window.location.reload();
 		}
 	};
+	
 	var checkLocationI=setInterval(checkLocation, 50);
 })();
