@@ -15,17 +15,16 @@
 	};
 })();
 
+
 window.__LOG__ = '';
-window.___log = function (s) {
-	//window.__LOG__.push(arguments);
-	window.__LOG__ += s+"\n";
-	window.__console_log.apply(console, arguments);
-};
-window.__console_log = console.log;
-console.log = window.___log;
+
 
 (function(){
-	console.log('init check');
+	var trace = function(s) {
+		window.__LOG__ += s+"\n";
+	};
+	
+	trace('init check');
 	var url = (window.__src_url) ? window.__src_url : window.location.href;
 	var body = (window.__src_code) ? window.__src_code : document.documentElement.outerHTML;
 	var m = null, m2 = null, isTimeout = false;
@@ -45,6 +44,8 @@ console.log = window.___log;
 	// &seek=OTT
 	var ext = '';
 	
+	
+
 	var getRevealUrl = function (u) {
 		return [PLAY_URL+encodeURIComponent(u)+ext, MERGE_URL+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
 	};
@@ -94,7 +95,7 @@ console.log = window.___log;
 		if ('' == data.param) {
 			return ;
 		}
-		console.log('getAdNum');
+		trace('getAdNum');
 		
 		adp = adp || '';
 		data.param += '&adp='+adp;
@@ -150,17 +151,17 @@ console.log = window.___log;
 		}
 		
 		var s = JSON.stringify(data);
-		console.log('get page data: '+s);
+		trace('get page data: '+s);
 		if (window.sendOTTData) {
 			if (window.sendOTTData.send) {
-				console.log('call sendOTTData.send');
+				trace('call sendOTTData.send');
 				window.sendOTTData.send(s);
 			} else {
 				var ss = JSON.stringify(window.sendOTTData);
-				console.log('sendOTTData missing method send.'+ss);
+				trace('sendOTTData missing method send.'+ss);
 			}
 		} else {
-			console.log('no sendOTTData object.');
+			trace('no sendOTTData object.');
 		}
 
 	};
@@ -169,7 +170,7 @@ console.log = window.___log;
 		if (undefined === ito) {
 			ito = isTimeout;
 		}
-		console.log('insertScript: '+url);
+		trace('insertScript: '+url);
 		to = to || 5000;
 		var e=document.createElement('script'); 
 		e.setAttribute('src', url);
@@ -203,11 +204,11 @@ console.log = window.___log;
 	var parseComplete = 0;
 	var parseStart = function () {
 		parseComplete++;
-		console.log('parseStart: '+parseComplete);
+		trace('parseStart: '+parseComplete);
 	};
 	
 	var parseDone = function () {
-		console.log('parseDone: '+parseComplete);
+		trace('parseDone: '+parseComplete);
 		parseComplete--;
 		returnPageData();
 	};
@@ -258,7 +259,7 @@ console.log = window.___log;
 		var __youku_complete = 0;
 		window.__check_getYoukuData = function (d) {
 			// if (d && d.payInfo && d.payInfo.oriprice) {
-			// 	console.log('vip, pass');
+			// 	trace('vip, pass');
 			// 	return;
 			// }
 			
@@ -276,7 +277,7 @@ console.log = window.___log;
 						setUrls(youkuUrl);
 						saveCookie(youkuUrl);
 					} else {
-						console.log('paid video, pass');
+						trace('paid video, pass');
 						return;
 					}
 				}
@@ -331,7 +332,7 @@ console.log = window.___log;
 					return;
 				}
 				if (v.vid != lastVid) {
-					console.log('get new location');
+					trace('get new location');
 					clearInterval(checkChangeI);
 					window.location.href = "http://m.tv.sohu.com/v"+v.vid+".shtml";
 				}
@@ -371,7 +372,7 @@ console.log = window.___log;
 					return;
 				}
 				if (v.vid != lastVid) {
-					console.log('get new location');
+					trace('get new location');
 					clearInterval(checkChangeI);
 					window.location.href = "http://m.tv.sohu.com/v"+v.vid+".shtml";
 				}
@@ -427,7 +428,7 @@ console.log = window.___log;
 				}
 				
 				if (v.iid != lastVid ) {
-					console.log('tudou get new location');
+					trace('tudou get new location');
 					clearInterval(checkChangeI);
 					if (v.acode && v.acode != '')
 						window.location.href='http://www.tudou.com/albumplay/'+v.acode+'/'+v.icode+'.html';
@@ -473,7 +474,7 @@ console.log = window.___log;
 	
 			getAdNum(m[1]);
 	
-			console.log('check letv');
+			trace('check letv');
 	
 			//if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.+?)[\"\']/i)) ) {
 			if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && window.info ) {
@@ -528,7 +529,7 @@ console.log = window.___log;
 				}
 
 				if (info.vid != lastVid) {
-					console.log('iqiyi get new location')
+					trace('iqiyi get new location')
 					clearInterval(checkChangeI);
 					//window.location.href='http://m.iqiyi.com/play.html?tvid='+v.tvid+'&vid='+v.vid;
 					window.location.href = info.vu;
@@ -561,14 +562,14 @@ console.log = window.___log;
 					
 		// 			if(d.data.qiyi_vip_info){
 		// 					//alert("You are VIP for iqiyi");
-		// 					console.log("You are VIP for iqiyi");
+		// 					trace("You are VIP for iqiyi");
 		// 					hideAds();
 		// 					ext += '&uc=1';
 		// 					setUrls(url);
 		// 					saveCookie(url);
 		// 			}else{
 		// 				//alert("You don't have permission to view");
-		// 				console.log("You don't have permission to view");
+		// 				trace("You don't have permission to view");
 		// 				return;
 		// 			}
 					
@@ -581,7 +582,7 @@ console.log = window.___log;
 		// 			insertScript('http://passport.iqiyi.com/apis/user/info.action?authcookie='+authcookie+'&callback=__check_getIqiyiData');
 		// 		}else{
 		// 			//alert("vip movie. not logged in");
-		// 			console.log("vip movie. not logged in");
+		// 			trace("vip movie. not logged in");
 		// 			return;
 		// 		}
 		// 	}else{
@@ -609,7 +610,7 @@ console.log = window.___log;
 		// 		}
 				
 		// 		if (info.vid != lastVid) {
-		// 			console.log('iqiyi get new location')
+		// 			trace('iqiyi get new location')
 		// 			clearInterval(checkChangeI);
 		// 			//window.location.href='http://m.iqiyi.com/play.html?tvid='+v.tvid+'&vid='+v.vid;
 		// 			window.location.href = info.vu;
