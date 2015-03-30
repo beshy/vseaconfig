@@ -1,4 +1,3 @@
-// 456
 ;(function(){
 	if (window.sendOTTData) {
 		return;
@@ -15,17 +14,16 @@
 	};
 })();
 
-/*window.__LOG__ = '';
-window.___log = function (s) {
-	//window.__LOG__.push(arguments);
-	window.__LOG__ += s+"\n";
-	window.__console_log.apply(console, arguments);
-};
-window.__console_log = console.log;
-console.log = window.___log;*/
+
+window.__LOG__ = '';
+
 
 (function(){
-	console.log('init check');
+	var trace = function(s) {
+		window.__LOG__ += s+"\n";
+	};
+	
+	trace('init check');
 	var url = (window.__src_url) ? window.__src_url : window.location.href;
 	var body = (window.__src_code) ? window.__src_code : document.documentElement.outerHTML;
 	var m = null, m2 = null, isTimeout = false;
@@ -45,6 +43,7 @@ console.log = window.___log;*/
 	// &seek=OTT
 	var ext = '';
 	
+
 	var getRevealUrl = function (u) {
 		return [PLAY_URL+encodeURIComponent(u)+ext, MERGE_URL+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
 	};
@@ -60,7 +59,6 @@ console.log = window.___log;*/
 	};
 	
 	window.__getAdNum = function (d) {
-
 		if ( !isShowAds )
 			return;
 		if (d && d.srcs) {
@@ -78,14 +76,11 @@ console.log = window.___log;*/
 			data.adtimes = data.adtimes.join(',');
 			
 		}
-		
 		if(vnObj['getAdNum']){
 			console.log('getAdNum');
 			clearTimeout(vnObj['getAdNum']);
 			parseDone(1);
 		}
-		
-		
 	};
 	
 	
@@ -98,11 +93,11 @@ console.log = window.___log;*/
 	var getAdNum = function (adp) {
 		if ( !isShowAds )
 			return;
-		
+
 		if ('' == data.param) {
 			return ;
 		}
-		//console.log('getAdNum');
+		trace('getAdNum');
 		
 		adp = adp || '';
 		data.param += '&adp='+adp;
@@ -137,7 +132,6 @@ console.log = window.___log;*/
 			data.valid = false;
 			data.cache = url+'false';
 		}
-		
 		parseDone(2);
 		
 		/*if(vnObj['checkSrcAvaliable']){
@@ -145,7 +139,6 @@ console.log = window.___log;*/
 			clearTimeout(vnObj['checkSrcAvaliable']);
 			parseDone(2);
 		}*/
-		
 	};
 	
 	
@@ -154,6 +147,7 @@ console.log = window.___log;*/
 		if (returnPageDataDone) {
 			return;
 		}
+		
 		if ( parseComplete>0 ) {
 			return setTimeout(returnPageData, 300);
 		}
@@ -166,26 +160,26 @@ console.log = window.___log;*/
 		}
 		
 		var s = JSON.stringify(data);
-		console.log('get page data: '+s);
+		trace('get page data: '+s);
 		if (window.sendOTTData) {
 			if (window.sendOTTData.send) {
-				console.log('call sendOTTData.send');
+				trace('call sendOTTData.send');
 				window.sendOTTData.send(s);
 			} else {
 				var ss = JSON.stringify(window.sendOTTData);
-				console.log('sendOTTData missing method send.'+ss);
+				trace('sendOTTData missing method send.'+ss);
 			}
 		} else {
-			console.log('no sendOTTData object.');
+			trace('no sendOTTData object.');
 		}
 
 	};
-	var vnObj = [];
-	var insertScript = function (url, ito, to, vn) {
+
+	var insertScript = function (url, ito, to) {
 		if (undefined === ito) {
 			ito = isTimeout;
 		}
-		console.log('insertScript: '+url);
+		trace('insertScript: '+url);
 		to = to || 5000;
 		var e=document.createElement('script'); 
 		e.setAttribute('src', url);
@@ -226,12 +220,13 @@ console.log = window.___log;*/
 	var parseComplete = 0;
 	var parseStart = function (n) {
 		parseComplete++;
-		console.log('parseStart: '+parseComplete+'. number: '+n);
+		trace('parseStart: '+parseComplete+'. number: '+n);
 	};
 	
 	var parseDone = function (n) {
 		parseComplete--;
-		console.log('parseDone: '+parseComplete+'. number: '+n);
+		trace('parseDone: '+parseComplete+'. number: '+n);
+		
 		returnPageData();
 	};
 	/*new more*/
@@ -275,13 +270,13 @@ console.log = window.___log;*/
 		// youku
 		var vid=m[1];
 		
-		var youkuUrl = "http://v.youku.com/v_show/id_"+vid+".html";
+		var youkuUrl = "http://v.youku.com/v_show/id_"+vid+".html"
 		setUrls(youkuUrl);
 		
 		var __youku_complete = 0;
 		window.__check_getYoukuData = function (d) {
 			// if (d && d.payInfo && d.payInfo.oriprice) {
-			// 	console.log('vip, pass');
+			// 	trace('vip, pass');
 			// 	return;
 			// }
 			
@@ -290,19 +285,20 @@ console.log = window.___log;*/
 				if (d.user && d.user.vip) {
 					hideAds();
 				}
+				
 				// check is allow play
-				if (d.payInfo) { //	vip movie exist
+				if (d.payInfo && d.payInfo.oriprice) {
 					if ( d.payInfo.play ) {
 						// save cookie
 						ext += '&uc=1';
 						setUrls(youkuUrl);
 						saveCookie(youkuUrl);
 					} else {
-						console.log('paid video, pass');
+						trace('paid video, pass');
 						return;
 					}
 				}
-				
+
 				if (d.data && d.data[0]) {
 					data.img = d.data[0].logo;
 					data.title = d.data[0].title;
@@ -328,7 +324,7 @@ console.log = window.___log;*/
 			}
 		}, 100);
 
-		
+
 	} else if ( null != (m=url.match(/tv.sohu.com/i)) && null != (m=body.match(/\s+vid\s*[\:\=]\s*\"(\d+)\"/i)) && null != (m2=body.match(/og\:url.*?content\=\"(.+?)\"/i)) ) {
 		
 		// sohu
@@ -353,7 +349,7 @@ console.log = window.___log;*/
 					return;
 				}
 				if (v.vid != lastVid) {
-					console.log('get new location');
+					trace('get new location');
 					clearInterval(checkChangeI);
 					window.location.href = "http://m.tv.sohu.com/v"+v.vid+".shtml";
 				}
@@ -389,11 +385,11 @@ console.log = window.___log;*/
 					setUrls(sohu_url);
 
 					parseDone(5);
-					
+
 					return;
 				}
 				if (v.vid != lastVid) {
-					console.log('get new location');
+					trace('get new location');
 					clearInterval(checkChangeI);
 					window.location.href = "http://m.tv.sohu.com/v"+v.vid+".shtml";
 				}
@@ -414,20 +410,23 @@ console.log = window.___log;*/
 				if (_istouched) {
 					window.location.href="http://m.tv.sohu.com/v"+this.getAttribute('video-vid')+".shtml";
 				}
+				
 			};
 		}
+
 		window.ontouchmove = function () {
 			_istouched = false;
 		};
 
 	} else if ( null != (m=url.match(/.*tudou.com.*/i)) && window.itemData ) {
 		var _d = window.itemData;
-		
 		if (_d.vcode && _d.vcode!='') {
 			ext += '&vcode='+_d.vcode;
 		} else {
 			//ext += '&iid='+_d.iid;
 		}
+		setUrls(url);
+
 		data.img = _d.pic;
 		data.title = _d.kw;
 		setUrls(url);
@@ -473,11 +472,9 @@ console.log = window.___log;*/
 			xmlhttp.open("GET","http://www.tudou.com/feeportal/getPayMsg.html?aid="+window.aid,true);
 			xmlhttp.send();
 		}
-		
-		
 		var lastVid = false;
 		var checkChange = function () {
-			
+
 			if (window.itemData) {
 				var v = window.itemData;
 				if (!lastVid) {
@@ -490,7 +487,7 @@ console.log = window.___log;*/
 				}
 				
 				if (v.iid != lastVid ) {
-					console.log('tudou get new location');
+					trace('tudou get new location');
 					clearInterval(checkChangeI);
 					if (v.acode && v.acode != '')
 						window.location.href='http://www.tudou.com/albumplay/'+v.acode+'/'+v.icode+'.html';
@@ -498,10 +495,11 @@ console.log = window.___log;*/
 						window.location.href='http://www.tudou.com/programs/view/'+v.icode+'/';
 					
 				}
+
 			}
 		};
 		var checkChangeI=setInterval(checkChange, 50);
-		
+
 		var checkTudouAd = function () {
 			if (window.itemData && window.itemData.iid) {
 				var showId = window.aid ? window.aid : '0';
@@ -514,7 +512,7 @@ console.log = window.___log;*/
 			}
 
 		};
-		
+
 		if ( !checkTudouAd() ) {
 			parseStart(7);
 			setTimeout(function () {
@@ -534,8 +532,8 @@ console.log = window.___log;*/
 			console.log(window.info.trylook);
 			
 			setUrls(leurl);
-			getAdNum(m[1]);	
-			console.log('check letv');
+			getAdNum(m[1]);
+			trace('check letv');
 			
 			if(window.info.trylook != 0){
 				
@@ -586,10 +584,10 @@ console.log = window.___log;*/
 	//} else if ( null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
 	} else if ( null != (m=url.match(/.*\.iqiyi\.com/i)) || null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
 		//ext += '&iid='+m[1]+'_'+m[2];
-		//setUrls(url);
-		
+		setUrls(url);
+
 		var lastVid = '';
-		
+
 		if (window.Q.PageInfo && Q.PageInfo.playInfo && Q.PageInfo.playInfo.vn) {
 			data.img = Q.PageInfo.playInfo.vpic;
 			data.title = Q.PageInfo.playInfo.vn;
@@ -632,6 +630,8 @@ console.log = window.___log;*/
 		}
 		
 		// check current play page change
+		}
+
 		var checkChange = function () {
 			if (window.tvInfoJs) {
 				var info = window.tvInfoJs;
@@ -645,16 +645,16 @@ console.log = window.___log;*/
 					parseDone(10);
 					return;
 				}
-				
+
 				if (info.vid != lastVid) {
-					console.log('iqiyi get new location');
+					trace('iqiyi get new location');
 					clearInterval(checkChangeI);
 					//window.location.href='http://m.iqiyi.com/play.html?tvid='+v.tvid+'&vid='+v.vid;
 					window.location.href = info.vu;
 				}
 			}
 		};
-		
+
 		var checkChangeI=setInterval(checkChange, 50);
 
 	} else if ( null != (m=url.match(/.*m.(ku6.com.*)/i)) ) {
@@ -808,6 +808,5 @@ console.log = window.___log;*/
 			window.location.reload();
 		}
 	};
-	
 	var checkLocationI=setInterval(checkLocation, 50);
 })();
