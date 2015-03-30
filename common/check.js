@@ -24,7 +24,6 @@ window.___log = function (s) {
 window.__console_log = console.log;
 console.log = window.___log;*/
 
-
 (function(){
 	console.log('init check');
 	var url = (window.__src_url) ? window.__src_url : window.location.href;
@@ -46,7 +45,7 @@ console.log = window.___log;*/
 	// &seek=OTT
 	var ext = '';
 	
-	var getRevealUrl = function (u) { 
+	var getRevealUrl = function (u) {
 		return [PLAY_URL+encodeURIComponent(u)+ext, MERGE_URL+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
 	};
 	
@@ -61,7 +60,7 @@ console.log = window.___log;*/
 	};
 	
 	window.__getAdNum = function (d) {
-		
+
 		if ( !isShowAds )
 			return;
 		if (d && d.srcs) {
