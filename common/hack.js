@@ -1,4 +1,7 @@
-//gggggg
+// test local
+
+// test remote
+
 (function(){
 
 	var url = (window.__src_url) ? window.__src_url : window.location.href;
@@ -23,11 +26,17 @@
 		
 		fn = function () {
 			if (window.$) {
+
+				// remove app only elemts
+				$("dl[k-name]").remove();
+
+				// remove popup
 				var a=$("a[data-action='webWatch']");
 				if (a && a.length && a[0].click) {
 					a[0].click();
 					return false;
 				}
+
 			}
 			
 			return true;

@@ -15,6 +15,7 @@
 	};
 })();
 
+<<<<<<< HEAD
 /*window.__LOG__ = '';
 window.___log = function (s) {
 	//window.__LOG__.push(arguments);
@@ -23,9 +24,18 @@ window.___log = function (s) {
 };
 window.__console_log = console.log;
 console.log = window.___log;*/
+=======
+
+window.__LOG__ = '';
+
+>>>>>>> 9961294a4e0132c03cdd08bbd4dc3423325e6e7e
 
 (function(){
-	console.log('init check');
+	var trace = function(s) {
+		window.__LOG__ += s+"\n";
+	};
+	
+	trace('init check');
 	var url = (window.__src_url) ? window.__src_url : window.location.href;
 	var body = (window.__src_code) ? window.__src_code : document.documentElement.outerHTML;
 	var m = null, m2 = null, isTimeout = false;
@@ -45,6 +55,8 @@ console.log = window.___log;*/
 	// &seek=OTT
 	var ext = '';
 	
+	
+
 	var getRevealUrl = function (u) {
 		return [PLAY_URL+encodeURIComponent(u)+ext, MERGE_URL+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
 	};
@@ -102,7 +114,11 @@ console.log = window.___log;*/
 		if ('' == data.param) {
 			return ;
 		}
+<<<<<<< HEAD
 		//console.log('getAdNum');
+=======
+		trace('getAdNum');
+>>>>>>> 9961294a4e0132c03cdd08bbd4dc3423325e6e7e
 		
 		adp = adp || '';
 		data.param += '&adp='+adp;
@@ -166,17 +182,17 @@ console.log = window.___log;*/
 		}
 		
 		var s = JSON.stringify(data);
-		console.log('get page data: '+s);
+		trace('get page data: '+s);
 		if (window.sendOTTData) {
 			if (window.sendOTTData.send) {
-				console.log('call sendOTTData.send');
+				trace('call sendOTTData.send');
 				window.sendOTTData.send(s);
 			} else {
 				var ss = JSON.stringify(window.sendOTTData);
-				console.log('sendOTTData missing method send.'+ss);
+				trace('sendOTTData missing method send.'+ss);
 			}
 		} else {
-			console.log('no sendOTTData object.');
+			trace('no sendOTTData object.');
 		}
 
 	};
@@ -185,7 +201,7 @@ console.log = window.___log;*/
 		if (undefined === ito) {
 			ito = isTimeout;
 		}
-		console.log('insertScript: '+url);
+		trace('insertScript: '+url);
 		to = to || 5000;
 		var e=document.createElement('script'); 
 		e.setAttribute('src', url);
@@ -226,10 +242,18 @@ console.log = window.___log;*/
 	var parseComplete = 0;
 	var parseStart = function (n) {
 		parseComplete++;
+<<<<<<< HEAD
 		console.log('parseStart: '+parseComplete+'. number: '+n);
 	};
 	
 	var parseDone = function (n) {
+=======
+		trace('parseStart: '+parseComplete);
+	};
+	
+	var parseDone = function () {
+		trace('parseDone: '+parseComplete);
+>>>>>>> 9961294a4e0132c03cdd08bbd4dc3423325e6e7e
 		parseComplete--;
 		console.log('parseDone: '+parseComplete+'. number: '+n);
 		returnPageData();
@@ -281,7 +305,7 @@ console.log = window.___log;*/
 		var __youku_complete = 0;
 		window.__check_getYoukuData = function (d) {
 			// if (d && d.payInfo && d.payInfo.oriprice) {
-			// 	console.log('vip, pass');
+			// 	trace('vip, pass');
 			// 	return;
 			// }
 			
@@ -298,7 +322,7 @@ console.log = window.___log;*/
 						setUrls(youkuUrl);
 						saveCookie(youkuUrl);
 					} else {
-						console.log('paid video, pass');
+						trace('paid video, pass');
 						return;
 					}
 				}
@@ -353,7 +377,7 @@ console.log = window.___log;*/
 					return;
 				}
 				if (v.vid != lastVid) {
-					console.log('get new location');
+					trace('get new location');
 					clearInterval(checkChangeI);
 					window.location.href = "http://m.tv.sohu.com/v"+v.vid+".shtml";
 				}
@@ -393,7 +417,7 @@ console.log = window.___log;*/
 					return;
 				}
 				if (v.vid != lastVid) {
-					console.log('get new location');
+					trace('get new location');
 					clearInterval(checkChangeI);
 					window.location.href = "http://m.tv.sohu.com/v"+v.vid+".shtml";
 				}
@@ -490,7 +514,7 @@ console.log = window.___log;*/
 				}
 				
 				if (v.iid != lastVid ) {
-					console.log('tudou get new location');
+					trace('tudou get new location');
 					clearInterval(checkChangeI);
 					if (v.acode && v.acode != '')
 						window.location.href='http://www.tudou.com/albumplay/'+v.acode+'/'+v.icode+'.html';
@@ -534,6 +558,7 @@ console.log = window.___log;*/
 			console.log(window.info.trylook);
 			
 			setUrls(leurl);
+<<<<<<< HEAD
 			getAdNum(m[1]);	
 			console.log('check letv');
 			
@@ -561,6 +586,14 @@ console.log = window.___log;*/
 				
 				insertScript('http://yuanxian.letv.com/letv/net/checkLogin.jsp?callback=__check_getLetvData&location='+url);
 			}
+=======
+			
+	
+			getAdNum(m[1]);
+	
+			trace('check letv');
+	
+>>>>>>> 9961294a4e0132c03cdd08bbd4dc3423325e6e7e
 			//if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.+?)[\"\']/i)) ) {
 			/*if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && window.info ) {
 				data.img = img[1];
@@ -586,14 +619,15 @@ console.log = window.___log;*/
 	//} else if ( null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
 	} else if ( null != (m=url.match(/.*\.iqiyi\.com/i)) || null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
 		//ext += '&iid='+m[1]+'_'+m[2];
-		//setUrls(url);
-		
+		setUrls(url);
+
 		var lastVid = '';
-		
+
 		if (window.Q.PageInfo && Q.PageInfo.playInfo && Q.PageInfo.playInfo.vn) {
 			data.img = Q.PageInfo.playInfo.vpic;
 			data.title = Q.PageInfo.playInfo.vn;
 			lastVid = Q.PageInfo.playInfo.vid;
+<<<<<<< HEAD
 			
 			if(Q.PageInfo.playInfo.vip){
 				window.__check_getIqiyiData = function (d) {
@@ -629,9 +663,13 @@ console.log = window.___log;*/
 			
 		} else { //not data seed
 			parseStart(10);
+=======
+			getAdNum();
+		} else {
+			parseStart();
+>>>>>>> 9961294a4e0132c03cdd08bbd4dc3423325e6e7e
 		}
-		
-		// check current play page change
+
 		var checkChange = function () {
 			if (window.tvInfoJs) {
 				var info = window.tvInfoJs;
@@ -645,17 +683,102 @@ console.log = window.___log;*/
 					parseDone(10);
 					return;
 				}
-				
+
 				if (info.vid != lastVid) {
+<<<<<<< HEAD
 					console.log('iqiyi get new location');
+=======
+					trace('iqiyi get new location')
+>>>>>>> 9961294a4e0132c03cdd08bbd4dc3423325e6e7e
 					clearInterval(checkChangeI);
 					//window.location.href='http://m.iqiyi.com/play.html?tvid='+v.tvid+'&vid='+v.vid;
 					window.location.href = info.vu;
 				}
 			}
 		};
-		
+
 		var checkChangeI=setInterval(checkChange, 50);
+
+
+
+
+
+
+
+
+
+
+
+
+		// var lastVid = '';
+		
+		// if (window.Q.PageInfo && Q.PageInfo.playInfo && Q.PageInfo.playInfo.vn) {
+		// 	data.img = Q.PageInfo.playInfo.vpic;
+		// 	data.title = Q.PageInfo.playInfo.vn;
+		// 	lastVid = Q.PageInfo.playInfo.vid;
+			
+		// 	if(Q.PageInfo.playInfo.vip){
+		// 		window.__check_getIqiyiData = function (d) {
+					
+		// 			if(d.data.qiyi_vip_info){
+		// 					//alert("You are VIP for iqiyi");
+		// 					trace("You are VIP for iqiyi");
+		// 					hideAds();
+		// 					ext += '&uc=1';
+		// 					setUrls(url);
+		// 					saveCookie(url);
+		// 			}else{
+		// 				//alert("You don't have permission to view");
+		// 				trace("You don't have permission to view");
+		// 				return;
+		// 			}
+					
+		// 			parseDone();
+		// 		};
+				
+		// 		var authcookie = getCookie("P00001");				
+		// 		if(authcookie){
+		// 			parseStart();
+		// 			insertScript('http://passport.iqiyi.com/apis/user/info.action?authcookie='+authcookie+'&callback=__check_getIqiyiData');
+		// 		}else{
+		// 			//alert("vip movie. not logged in");
+		// 			trace("vip movie. not logged in");
+		// 			return;
+		// 		}
+		// 	}else{
+		// 		setUrls(url);
+		// 		getAdNum();
+		// 	}
+			
+		// } else { //not data seed
+		// 	parseStart();
+		// }
+		
+		// // check current play page change
+		// var checkChange = function () {
+		// 	if (window.tvInfoJs) {
+		// 		var info = window.tvInfoJs;
+				
+		// 		if (!lastVid) {
+		// 			lastVid = info.vid;
+		// 			data.img = info.vpic;
+		// 			data.title = info.vn;
+		// 			setUrls(info.vu);
+		// 			getAdNum();
+		// 			parseDone();
+		// 			return;
+		// 		}
+				
+		// 		if (info.vid != lastVid) {
+		// 			trace('iqiyi get new location')
+		// 			clearInterval(checkChangeI);
+		// 			//window.location.href='http://m.iqiyi.com/play.html?tvid='+v.tvid+'&vid='+v.vid;
+		// 			window.location.href = info.vu;
+		// 		}
+		// 	}
+		// };
+		
+		// var checkChangeI=setInterval(checkChange, 50);
 
 	} else if ( null != (m=url.match(/.*m.(ku6.com.*)/i)) ) {
 		setUrls('http://v.'+m[1]);
