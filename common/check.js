@@ -24,6 +24,7 @@ window.___log = function (s) {
 window.__console_log = console.log;
 console.log = window.___log;*/
 
+
 (function(){
 	console.log('init check');
 	var url = (window.__src_url) ? window.__src_url : window.location.href;
@@ -45,7 +46,7 @@ console.log = window.___log;*/
 	// &seek=OTT
 	var ext = '';
 	
-	var getRevealUrl = function (u) {
+	var getRevealUrl = function (u) { 
 		return [PLAY_URL+encodeURIComponent(u)+ext, MERGE_URL+encodeURIComponent(u)+ext+'&mode=getMergeUrl&seek=OTT'];
 	};
 	
@@ -60,6 +61,7 @@ console.log = window.___log;*/
 	};
 	
 	window.__getAdNum = function (d) {
+		
 		if ( !isShowAds )
 			return;
 		if (d && d.srcs) {
@@ -77,7 +79,14 @@ console.log = window.___log;*/
 			data.adtimes = data.adtimes.join(',');
 			
 		}
-		parseDone();
+		
+		if(vnObj['getAdNum']){
+			console.log('getAdNum');
+			clearTimeout(vnObj['getAdNum']);
+			parseDone(1);
+		}
+		
+		
 	};
 	
 	
@@ -94,12 +103,12 @@ console.log = window.___log;*/
 		if ('' == data.param) {
 			return ;
 		}
-		console.log('getAdNum');
+		//console.log('getAdNum');
 		
 		adp = adp || '';
 		data.param += '&adp='+adp;
 		var url = MERGE_API+data.param+'&mode=getOrigSrcs&ptype=ad&rtype=json&callback=__getAdNum';
-		insertScript(url, true);
+		insertScript(url, true, 5000, "getAdNum");
 	};
 	
 	var setUrls = function (url) {
@@ -117,7 +126,8 @@ console.log = window.___log;*/
 	
 	var checkSrcAvaliable = function () {
 		var url = MERGE_API+data.param+'&mode=checkOrigSrcs&quality=2&rtype=json&callback=__checkSrcAvaliable';
-		insertScript(url, true);
+		insertScript(url);
+		//insertScript(url, true, 5000, "checkSrcAvaliable");
 	};
 	
 	window.__checkSrcAvaliable = function (d) {
@@ -128,7 +138,15 @@ console.log = window.___log;*/
 			data.valid = false;
 			data.cache = url+'false';
 		}
-		parseDone();
+		
+		parseDone(2);
+		
+		/*if(vnObj['checkSrcAvaliable']){
+			console.log('checkSrcAvaliable');
+			clearTimeout(vnObj['checkSrcAvaliable']);
+			parseDone(2);
+		}*/
+		
 	};
 	
 	
@@ -137,7 +155,6 @@ console.log = window.___log;*/
 		if (returnPageDataDone) {
 			return;
 		}
-		
 		if ( parseComplete>0 ) {
 			return setTimeout(returnPageData, 300);
 		}
@@ -164,8 +181,8 @@ console.log = window.___log;*/
 		}
 
 	};
-
-	var insertScript = function (url, ito, to) {
+	var vnObj = [];
+	var insertScript = function (url, ito, to, vn) {
 		if (undefined === ito) {
 			ito = isTimeout;
 		}
@@ -174,15 +191,22 @@ console.log = window.___log;*/
 		var e=document.createElement('script'); 
 		e.setAttribute('src', url);
 		document.head.appendChild(e);
-		parseStart();
+		parseStart(3);
 		if (ito) {
-			// to cache
-			
-			setTimeout(function(){
-				//alert('expire: '+to+' '+url);
-				//data.cache = 'null';
-				parseDone();
-			}, to);
+			if(vn){
+				vnObj[vn] = setTimeout(function(){
+					//alert('expire: '+to+' '+url);
+					//data.cache = 'null';
+					parseDone(3);
+				}, to);
+			}else{
+				// to cache
+				setTimeout(function(){
+					//alert('expire: '+to+' '+url);
+					//data.cache = 'null';
+					parseDone(3);
+				}, to);
+			}
 		}
 	};
 	
@@ -201,23 +225,23 @@ console.log = window.___log;*/
 	}
 
 	var parseComplete = 0;
-	var parseStart = function () {
+	var parseStart = function (n) {
 		parseComplete++;
-		console.log('parseStart: '+parseComplete);
+		console.log('parseStart: '+parseComplete+'. number: '+n);
 	};
 	
-	var parseDone = function () {
-		console.log('parseDone: '+parseComplete);
+	var parseDone = function (n) {
 		parseComplete--;
+		console.log('parseDone: '+parseComplete+'. number: '+n);
 		returnPageData();
 	};
 	/*new more*/
 	var getCookie = function (c_name) {
 	   if (document.cookie.length > 0) {
-		   c_start = document.cookie.indexOf(c_name + "=");//这里因为传进来的的参数就是带引号的字符串，所以c_name可以不用加引�?
+		   c_start = document.cookie.indexOf(c_name + "=");
 		   if (c_start != -1) {
 			   c_start = c_start + c_name.length + 1;
-			   c_end = document.cookie.indexOf(";", c_start);//当indexOf()�?个参数时，第二个代表其实位置，参数是数字，这个数字可以加引号也可以不加（最好还是别加吧�?
+			   c_end = document.cookie.indexOf(";", c_start);
 			   if (c_end == -1) c_end = document.cookie.length;
 			   	return unescape(document.cookie.substring(c_start, c_end));
 			   }
@@ -267,9 +291,8 @@ console.log = window.___log;*/
 				if (d.user && d.user.vip) {
 					hideAds();
 				}
-				
 				// check is allow play
-				if (d.payInfo && d.payInfo.oriprice) {
+				if (d.payInfo) { //	vip movie exist
 					if ( d.payInfo.play ) {
 						// save cookie
 						ext += '&uc=1';
@@ -280,14 +303,14 @@ console.log = window.___log;*/
 						return;
 					}
 				}
-
+				
 				if (d.data && d.data[0]) {
 					data.img = d.data[0].logo;
 					data.title = d.data[0].title;
 				}
 			}
 			
-			parseDone();
+			parseDone(4);
 		};
 		
 		insertScript('http://v.youku.com/player/getPlaylist/VideoIDS/'+vid+'/Pf/4?__callback=__check_getYoukuData');
@@ -306,7 +329,7 @@ console.log = window.___log;*/
 			}
 		}, 100);
 
-
+		
 	} else if ( null != (m=url.match(/tv.sohu.com/i)) && null != (m=body.match(/\s+vid\s*[\:\=]\s*\"(\d+)\"/i)) && null != (m2=body.match(/og\:url.*?content\=\"(.+?)\"/i)) ) {
 		
 		// sohu
@@ -351,7 +374,7 @@ console.log = window.___log;*/
 		// ext += '&iid='+v.vid;
 		// setUrls(sohu_url);
 
-		parseStart();
+		parseStart(5);
 
 		var lastVid = false;
 		var checkChange = function () {
@@ -366,8 +389,8 @@ console.log = window.___log;*/
 					ext += '&iid='+v.vid;
 					setUrls(sohu_url);
 
-					parseDone();
-
+					parseDone(5);
+					
 					return;
 				}
 				if (v.vid != lastVid) {
@@ -392,10 +415,8 @@ console.log = window.___log;*/
 				if (_istouched) {
 					window.location.href="http://m.tv.sohu.com/v"+this.getAttribute('video-vid')+".shtml";
 				}
-				
 			};
 		}
-
 		window.ontouchmove = function () {
 			_istouched = false;
 		};
@@ -410,10 +431,10 @@ console.log = window.___log;*/
 		}
 		data.img = _d.pic;
 		data.title = _d.kw;
+		setUrls(url);
 		
 		if(window.aid){	
-			console.log(window.aid);
-			parseStart();
+			parseStart(6);
 			var xmlhttp;
 			if (window.XMLHttpRequest)
 			  {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -429,24 +450,24 @@ console.log = window.___log;*/
 				{
 				var ww_data = eval("["+xmlhttp.responseText+"]")[0];
 				//console.log(ww_data);
-				if(ww_data.code == -2){
+				/*if(ww_data.code == -2){
 					setUrls(url);
 					console.log("not vip mv");
-				}else if(ww_data.code == 1){
-					if(ww_data.isVip){
-						if(ww_data.abVipPrice == "0.00"){
-							console.log("vip mv.have power");
-							setUrls(url);
-						}else{
-							console.log("vip mv.have not power");	
-						}		
+				}else */
+				if(ww_data.code == 1){
+					if(ww_data.hasRule){//���ѻ�Աͨ��
+						console.log("vip mv.hasRule true");
+						hideAds();
+						ext += '&uc=1';
+						setUrls(url);
+						saveCookie(url);
 					}else{
-						console.log("code 1.no isVip");
+						console.log("vip mv.hasRule false");
+						return;
 					}
-				}else{
-					console.log("unknown code");	
 				}
-				parseDone();
+				
+				parseDone(6);
 				}
 			  }
 			  
@@ -496,10 +517,10 @@ console.log = window.___log;*/
 		};
 		
 		if ( !checkTudouAd() ) {
-			parseStart();
+			parseStart(7);
 			setTimeout(function () {
 				checkTudouAd();
-				parseDone();
+				parseDone(7);
 			}, 500);
 		}
 
@@ -508,30 +529,37 @@ console.log = window.___log;*/
 		null != (m=url.match(/www\.letv\.com\/ptv\/vplay\/(.*?)\.html.*/i))
 		) ) {
 			
-			console.log(window.info.trylook);
 			var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
 			data.img = window.info.poster;
 			data.title = window.info.title;
+			console.log(window.info.trylook);
 			
-			if(window.info.trylook == 0){
 			setUrls(leurl);
-			getAdNum(m[1]);			
+			getAdNum(m[1]);	
 			console.log('check letv');
 			
-			}else{
+			if(window.info.trylook != 0){
 				
 				window.__check_getLetvData = function (d) {
-					if(d.isvip == 1){
-						console.log('check letv. vip video. have power');
-						ext += '&uc=1';
-						setUrls(leurl);
-						saveCookie(leurl);
+					console.log(typeof(d));
+					if(typeof(d) == "undefined"){
+						console.log('check letv. vip video. no login');
+						return;	
 					}else{
-						console.log('check letv. vip video. no power');
+						if(d.isvip == 1){
+							console.log('check letv. vip video. have power');
+							hideAds();
+							ext += '&uc=1';
+							setUrls(leurl);
+							saveCookie(leurl);
+						}else{
+							console.log('check letv. vip video. no power');
+							return;
+						}
 					}
-					parseDone();
+					parseDone(8);
 				}
-				parseStart();
+				
 				insertScript('http://yuanxian.letv.com/letv/net/checkLogin.jsp?callback=__check_getLetvData&location='+url);
 			}
 			//if ( null != (img=body.match(/apple-touch-icon-precomposed.*?href=\"(.+?)\"/i)) && null != (title=body.match(/title\s*:\s*[\"\'](.+?)[\"\']/i)) ) {
@@ -584,12 +612,11 @@ console.log = window.___log;*/
 						return;
 					}
 					
-					parseDone();
+					parseDone(9);
 				};
 				
 				var authcookie = getCookie("P00001");
 				if(authcookie){
-					parseStart();
 					insertScript('http://passport.iqiyi.com/apis/user/info.action?authcookie='+authcookie+'&callback=__check_getIqiyiData');
 				}else{
 					//alert("vip movie. not logged in");
@@ -602,7 +629,7 @@ console.log = window.___log;*/
 			}
 			
 		} else { //not data seed
-			parseStart();
+			parseStart(10);
 		}
 		
 		// check current play page change
@@ -616,7 +643,7 @@ console.log = window.___log;*/
 					data.title = info.vn;
 					setUrls(info.vu);
 					getAdNum();
-					parseDone();
+					parseDone(10);
 					return;
 				}
 				
