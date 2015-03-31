@@ -77,7 +77,7 @@ window.__LOG__ = '';
 			
 		}
 		if(vnObj['getAdNum']){
-			console.log('getAdNum');
+			trace('getAdNum');
 			clearTimeout(vnObj['getAdNum']);
 			parseDone(1);
 		}
@@ -135,7 +135,7 @@ window.__LOG__ = '';
 		parseDone(2);
 		
 		/*if(vnObj['checkSrcAvaliable']){
-			console.log('checkSrcAvaliable');
+			trace('checkSrcAvaliable');
 			clearTimeout(vnObj['checkSrcAvaliable']);
 			parseDone(2);
 		}*/
@@ -174,7 +174,8 @@ window.__LOG__ = '';
 		}
 
 	};
-
+	
+	var vnObj=[];
 	var insertScript = function (url, ito, to) {
 		if (undefined === ito) {
 			ito = isTimeout;
@@ -186,7 +187,8 @@ window.__LOG__ = '';
 		document.head.appendChild(e);
 		parseStart(3);
 		if (ito) {
-			if(vn){
+			
+			if(typeof(vn) != "undefined"){
 				vnObj[vn] = setTimeout(function(){
 					//alert('expire: '+to+' '+url);
 					//data.cache = 'null';
@@ -287,7 +289,7 @@ window.__LOG__ = '';
 				}
 				
 				// check is allow play
-				if (d.payInfo && d.payInfo.oriprice) {
+				if (d.payInfo) {  //vip exist
 					if ( d.payInfo.play ) {
 						// save cookie
 						ext += '&uc=1';
@@ -298,7 +300,7 @@ window.__LOG__ = '';
 						return;
 					}
 				}
-
+				
 				if (d.data && d.data[0]) {
 					data.img = d.data[0].logo;
 					data.title = d.data[0].title;
@@ -447,20 +449,16 @@ window.__LOG__ = '';
 			  if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				{
 				var ww_data = eval("["+xmlhttp.responseText+"]")[0];
-				//console.log(ww_data);
-				/*if(ww_data.code == -2){
-					setUrls(url);
-					console.log("not vip mv");
-				}else */
+				
 				if(ww_data.code == 1){
 					if(ww_data.hasRule){//付费会员通用
-						console.log("vip mv.hasRule true");
+						trace("vip mv.hasRule true");
 						hideAds();
 						ext += '&uc=1';
 						setUrls(url);
 						saveCookie(url);
 					}else{
-						console.log("vip mv.hasRule false");
+						trace("vip mv.hasRule false");
 						return;
 					}
 				}
@@ -529,7 +527,7 @@ window.__LOG__ = '';
 			var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
 			data.img = window.info.poster;
 			data.title = window.info.title;
-			console.log(window.info.trylook);
+			trace(window.info.trylook);
 			
 			setUrls(leurl);
 			getAdNum(m[1]);
@@ -538,19 +536,19 @@ window.__LOG__ = '';
 			if(window.info.trylook != 0){
 				
 				window.__check_getLetvData = function (d) {
-					console.log(typeof(d));
+					trace(typeof(d));
 					if(typeof(d) == "undefined"){
-						console.log('check letv. vip video. no login');
+						trace('check letv. vip video. no login');
 						return;	
 					}else{
 						if(d.isvip == 1){
-							console.log('check letv. vip video. have power');
+							trace('check letv. vip video. have power');
 							hideAds();
 							ext += '&uc=1';
 							setUrls(leurl);
 							saveCookie(leurl);
 						}else{
-							console.log('check letv. vip video. no power');
+							trace('check letv. vip video. no power');
 							return;
 						}
 					}
@@ -584,8 +582,8 @@ window.__LOG__ = '';
 	//} else if ( null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
 	} else if ( null != (m=url.match(/.*\.iqiyi\.com/i)) || null != (m=url.match(/.*\.iqiyi\.com\/play.html.*?tvid\=([^\&\#]+).*?vid\=([^\&\#]+)/i)) ) {
 		//ext += '&iid='+m[1]+'_'+m[2];
-		setUrls(url);
-
+		//setUrls(url);
+		
 		var lastVid = '';
 
 		if (window.Q.PageInfo && Q.PageInfo.playInfo && Q.PageInfo.playInfo.vn) {
@@ -598,14 +596,14 @@ window.__LOG__ = '';
 					
 					if(d.data.qiyi_vip_info){
 							//alert("You are VIP for iqiyi");
-							console.log("You are VIP for iqiyi");
+							trace("You are VIP for iqiyi");
 							hideAds();
 							ext += '&uc=1';
 							setUrls(url);
 							saveCookie(url);
 					}else{
 						//alert("You don't have permission to view");
-						console.log("You don't have permission to view");
+						trace("You don't have permission to view");
 						return;
 					}
 					
@@ -613,11 +611,12 @@ window.__LOG__ = '';
 				};
 				
 				var authcookie = getCookie("P00001");
+				
 				if(authcookie){
 					insertScript('http://passport.iqiyi.com/apis/user/info.action?authcookie='+authcookie+'&callback=__check_getIqiyiData');
 				}else{
 					//alert("vip movie. not logged in");
-					console.log("vip movie. not logged in");
+					trace("vip movie. not logged in");
 					return;
 				}
 			}else{
@@ -630,7 +629,7 @@ window.__LOG__ = '';
 		}
 		
 		// check current play page change
-		}
+		
 
 		var checkChange = function () {
 			if (window.tvInfoJs) {
@@ -656,6 +655,8 @@ window.__LOG__ = '';
 		};
 
 		var checkChangeI=setInterval(checkChange, 50);
+		
+		
 
 	} else if ( null != (m=url.match(/.*m.(ku6.com.*)/i)) ) {
 		setUrls('http://v.'+m[1]);
@@ -687,9 +688,9 @@ window.__LOG__ = '';
 		
 		data.img = 'http://s'+rnd(1, 4)+'.pplive.cn/v/cap/'+webcfg.channel_id+'/h160.jpg';
 		data.title = m_info.title;
-
+		
 		getAdNum();
-
+		
 	} else if ( null != (m=url.match(/.*?\.(pps\.tv\/play.*)/i)) ) {
 		//ext += '&iid=' + page_var.url_key;
 		setUrls('http://v.'+m[1]);
