@@ -17,9 +17,9 @@
 
 window.__LOG__ = '';
 
-
 (function(){
 	var trace = function(s) {
+		//alert(s);
 		window.__LOG__ += s+"\n";
 	};
 	
@@ -190,14 +190,14 @@ window.__LOG__ = '';
 			
 			if(typeof(vn) != "undefined"){
 				vnObj[vn] = setTimeout(function(){
-					//alert('expire: '+to+' '+url);
+					//trace('expire: '+to+' '+url);
 					//data.cache = 'null';
 					parseDone(3);
 				}, to);
 			}else{
 				// to cache
 				setTimeout(function(){
-					//alert('expire: '+to+' '+url);
+					//trace('expire: '+to+' '+url);
 					//data.cache = 'null';
 					parseDone(3);
 				}, to);
@@ -421,13 +421,14 @@ window.__LOG__ = '';
 		};
 
 	} else if ( null != (m=url.match(/.*tudou.com.*/i)) && window.itemData ) {
+		
 		var _d = window.itemData;
 		if (_d.vcode && _d.vcode!='') {
 			ext += '&vcode='+_d.vcode;
 		} else {
 			//ext += '&iid='+_d.iid;
 		}
-		setUrls(url);
+		
 
 		data.img = _d.pic;
 		data.title = _d.kw;
@@ -451,7 +452,7 @@ window.__LOG__ = '';
 				var ww_data = eval("["+xmlhttp.responseText+"]")[0];
 				
 				if(ww_data.code == 1){
-					if(ww_data.hasRule){//付费会员通用
+					if(ww_data.hasRule){
 						trace("vip mv.hasRule true");
 						hideAds();
 						ext += '&uc=1';
@@ -470,6 +471,7 @@ window.__LOG__ = '';
 			xmlhttp.open("GET","http://www.tudou.com/feeportal/getPayMsg.html?aid="+window.aid,true);
 			xmlhttp.send();
 		}
+		
 		var lastVid = false;
 		var checkChange = function () {
 
@@ -523,20 +525,20 @@ window.__LOG__ = '';
 		null != (m=url.match(/m\.letv\.com\/vplay\_(.*?)\.html.*/i)) ||
 		null != (m=url.match(/www\.letv\.com\/ptv\/vplay\/(.*?)\.html.*/i))
 		) ) {
-			
+			trace('check letv');
 			var leurl = 'http://www.letv.com/ptv/vplay/'+m[1]+'.html';
 			data.img = window.info.poster;
 			data.title = window.info.title;
-			trace(window.info.trylook);
+			trace('trylook '+window.info.trylook);
 			
 			setUrls(leurl);
 			getAdNum(m[1]);
-			trace('check letv');
+			
 			
 			if(window.info.trylook != 0){
 				
 				window.__check_getLetvData = function (d) {
-					trace(typeof(d));
+					
 					if(typeof(d) == "undefined"){
 						trace('check letv. vip video. no login');
 						return;	
@@ -584,25 +586,26 @@ window.__LOG__ = '';
 		//ext += '&iid='+m[1]+'_'+m[2];
 		//setUrls(url);
 		
-		var lastVid = '';
+		/*var lastVid = '';
 
 		if (window.Q.PageInfo && Q.PageInfo.playInfo && Q.PageInfo.playInfo.vn) {
+			
 			data.img = Q.PageInfo.playInfo.vpic;
 			data.title = Q.PageInfo.playInfo.vn;
 			lastVid = Q.PageInfo.playInfo.vid;
-			
+			alert(Q.PageInfo.playInfo.vip+'!!!'+data.img+"!!!"+data.title+"!!!"+lastVid+"!!!");
 			if(Q.PageInfo.playInfo.vip){
 				window.__check_getIqiyiData = function (d) {
 					
 					if(d.data.qiyi_vip_info){
-							//alert("You are VIP for iqiyi");
+							alert("You are VIP for iqiyi");
 							trace("You are VIP for iqiyi");
 							hideAds();
 							ext += '&uc=1';
 							setUrls(url);
 							saveCookie(url);
 					}else{
-						//alert("You don't have permission to view");
+						alert("You don't have permission to view");
 						trace("You don't have permission to view");
 						return;
 					}
@@ -615,11 +618,12 @@ window.__LOG__ = '';
 				if(authcookie){
 					insertScript('http://passport.iqiyi.com/apis/user/info.action?authcookie='+authcookie+'&callback=__check_getIqiyiData');
 				}else{
-					//alert("vip movie. not logged in");
+					alert("vip movie. not logged in");
 					trace("vip movie. not logged in");
 					return;
 				}
 			}else{
+				alert("not vip movie");
 				setUrls(url);
 				getAdNum();
 			}
@@ -644,7 +648,7 @@ window.__LOG__ = '';
 					parseDone(10);
 					return;
 				}
-
+				
 				if (info.vid != lastVid) {
 					trace('iqiyi get new location');
 					clearInterval(checkChangeI);
@@ -653,7 +657,50 @@ window.__LOG__ = '';
 				}
 			}
 		};
+*/
+		parseStart(10);
+		var checkChange = function () {			
+			if(typeof(Q.PageInfo.playInfo.vip) != "undefined"){
 
+				clearInterval(checkChangeI);
+				
+				data.img = typeof(Q.PageInfo.playInfo.vpic)!="undefined"?Q.PageInfo.playInfo.vpic:'undefined';
+				data.title = typeof(Q.PageInfo.playInfo.vn)!="undefined"?Q.PageInfo.playInfo.vn:'undefined';
+				
+				if(Q.PageInfo.playInfo.vip == true){
+					window.__check_getIqiyiData = function (d) {
+						if(d.data.qiyi_vip_info){
+							if(d.data.qiyi_vip_info.type == '1'){
+								trace("You are VIP for iqiyi");
+								hideAds();
+								ext += '&uc=1';
+								setUrls(url);
+								saveCookie(url);
+							}else{
+								trace("Your vip is overdue");
+								return;	
+							}
+						}else{
+							trace("You don't have permission to view");
+							return;
+						}
+						parseDone(9);
+					};
+					var authcookie = getCookie("P00001");
+					if(authcookie){
+						insertScript('http://passport.iqiyi.com/apis/user/info.action?authcookie='+authcookie+'&callback=__check_getIqiyiData');
+					}else{
+						trace("vip movie. not logged in");
+						return;
+					}
+				}else{
+					trace("not vip movie");
+					setUrls(url);
+					getAdNum();
+				}
+				parseDone(10);
+			}
+		}
 		var checkChangeI=setInterval(checkChange, 50);
 		
 		
@@ -796,7 +843,7 @@ window.__LOG__ = '';
 	}
 	
 	returnPageData();
-
+	
 })();
 
 
